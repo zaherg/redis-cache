@@ -7,3 +7,6 @@
 .php-cs-fixer.cache
 composer.lock
 config.sh
+
+node_modules
+public/manifest.json
