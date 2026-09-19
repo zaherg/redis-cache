@@ -1,0 +1,69 @@
+{
+  "name": "redis-cache",
+  "version": "3.0.0",
+  "description": "A persistent object cache backend powered by Redis®¹. Supports Predis, PhpRedis (PECL), Relay, replication, sentinels, clustering and WP-CLI.",
+  "homepage": "https://github.com/zaherg/redis-cache#readme",
+  "keywords": [
+    "redis",
+    "object cache",
+    "caching",
+    "performance",
+    "relay",
+    "wordpress"
+  ],
+  "bugs": {
+    "url": "https://github.com/zaherg/redis-cache/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaherg/redis-cache.git"
+  },
+  "authors": [
+    {
+      "name": "Till Krüss",
+      "homepage": "https://till.im/"
+    }
+  ],
+  "license": "LGPL-3.0-or-later",
+  "type": "module",
+  "main": "frontend/settings/main.tsx",
+  "directories": {
+    "test": "frontend/__tests__"
+  },
+  "scripts": {
+    "build": "npm run tsc && wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "dev": "wp-scripts start",
+    "tsc": "tsc",
+    "format": "biome check --write --linter-enabled=false .",
+    "format:check": "biome check --linter-enabled=false .",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@wordpress/api-fetch": "^8.0.0",
+    "@wordpress/autop": "^5.0.0",
+    "@wordpress/components": "^43.0.0",
+    "@wordpress/dom-ready": "^5.0.0",
+    "@wordpress/element": "^10.0.0",
+    "@wordpress/escape-html": "^4.0.0",
+    "@wordpress/html-entities": "^5.0.0",
+    "@wordpress/i18n": "^7.0.0",
+    "@wordpress/icons": "^19.0.0",
+    "@wordpress/scripts": "^37.0.0",
+    "@wordpress/theme": "^3.0.0",
+    "@wordpress/ui": "^0.25.0",
+    "apexcharts": "4.7.0",
+    "postcss-nesting": "^14.0.1",
+    "purgecss-with-wordpress": "^8.0.0",
+    "react-apexcharts": "1.7.0",
+    "webpack-manifest-plugin": "^6.0.1"
+  }
+}
