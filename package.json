@@ -1,0 +1,53 @@
+{
+  "name": "redis-cache",
+  "version": "3.0.0",
+  "description": "A persistent object cache backend powered by Redis®¹. Supports Predis, PhpRedis (PECL), Relay, replication, sentinels, clustering and WP-CLI.",
+  "homepage": "https://github.com/zaherg/redis-cache#readme",
+  "keywords": [
+    "redis",
+    "object cache",
+    "caching",
+    "performance",
+    "relay",
+    "wordpress"
+  ],
+  "bugs": {
+    "url": "https://github.com/zaherg/redis-cache/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaherg/redis-cache.git"
+  },
+  "authors": [
+    {
+      "name": "Till Krüss",
+      "homepage": "https://till.im/"
+    }
+  ],
+  "license": "LGPL-3.0-or-later",
+  "type": "module",
+  "main": "frontend/settings/main.tsx",
+  "directories": {
+    "test": "frontend/__tests__"
+  },
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "dev": "wp-scripts start",
+    "format": "biome check --write --linter-enabled=false .",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/react": "^19.3.0",
+    "@wordpress/dom-ready": "^4.55.0",
+    "@wordpress/element": "^8.7.0",
+    "@wordpress/scripts": "^35.0.0",
+    "typescript": "^7.0.2",
+    "webpack-manifest-plugin": "^6.0.1"
+  }
+}
