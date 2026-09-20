@@ -6,17 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": [
-      "frontend/**",
-      "webpack.config.js",
-      "package.json",
-      "tsconfig.json",
-      "biome.json"
-    ]
+    "includes": ["frontend/**", "webpack.config.js", "package.json", "tsconfig.json", "biome.json"]
   },
   "formatter": {
     "enabled": true,
-    "useEditorconfig": true
+    "useEditorconfig": true,
+    "lineWidth": 120
   },
   "linter": {
     "enabled": true,

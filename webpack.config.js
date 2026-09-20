@@ -1,5 +1,6 @@
-import { dirname, resolve } from 'node:path';
+import { dirname, posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { basename } from 'path';
 
 import defaultConfig from '@wordpress/scripts/config/webpack.config.js';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
@@ -16,28 +17,11 @@ export default {
         ...defaultConfig.output,
         path: resolve(__dir, 'public/dist'),
         clean: {
-            keep: /^\.gitkeep$/,
+            keep: /^\.gitignore$/,
         },
         filename: '[name].js',
         chunkFilename: '[name].js',
         publicPath: 'auto',
-    },
-    optimization: {
-        ...defaultConfig.optimization,
-        runtimeChunk: 'single',
-        splitChunks: {
-            ...defaultConfig.optimization.splitChunks,
-            cacheGroups: {
-                ...defaultConfig.optimization.splitChunks.cacheGroups,
-                defaultVendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    type: /^javascript/,
-                    name: 'vendors',
-                    chunks: 'all',
-                    enforce: true,
-                },
-            },
-        },
     },
     plugins: [
         ...defaultConfig.plugins,
@@ -47,7 +31,10 @@ export default {
             generate(seed, files, entrypoints) {
                 const assets = files.reduce(
                     (assets, file) => {
-                        assets[file.name] = file.path;
+                        const path = posix.normalize(file.path);
+                        const name = path.endsWith('.css') ? posix.relative('dist', path) : posix.normalize(file.name);
+
+                        assets[name] = path;
                         return assets;
                     },
                     { ...seed },
@@ -58,23 +45,14 @@ export default {
                     entrypoints: Object.fromEntries(
                         Object.entries(entrypoints).map(([name, filenames]) => {
                             // Keep webpack's dependency order and align metadata with its script.
-                            const scripts = filenames.filter((filename) =>
-                                filename.endsWith('.js'),
-                            );
+                            const scripts = filenames.filter((filename) => filename.endsWith('.js'));
 
                             return [
                                 name,
                                 {
                                     assets: scripts
-                                        .map((script) =>
-                                            script.replace(
-                                                /\.js$/,
-                                                '.asset.php',
-                                            ),
-                                        )
-                                        .filter((asset) =>
-                                            filenames.includes(asset),
-                                        ),
+                                        .map((script) => script.replace(/\.js$/, '.asset.php'))
+                                        .filter((asset) => filenames.includes(asset)),
                                     scripts,
                                 },
                             ];
@@ -84,6 +62,30 @@ export default {
             },
         }),
     ],
+    optimization: {
+        ...defaultConfig.optimization,
+        runtimeChunk: 'single',
+        splitChunks: {
+            ...defaultConfig.optimization.splitChunks,
+            cacheGroups: {
+                ...defaultConfig.optimization.splitChunks.cacheGroups,
+                style: {
+                    ...defaultConfig.optimization.splitChunks.cacheGroups.style,
+                    name(_, chunks) {
+                        const chunkName = chunks[0].name;
+                        return `${dirname(chunkName)}/${basename(chunkName)}`;
+                    },
+                },
+                defaultVendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    type: /^javascript/,
+                    name: 'vendors',
+                    chunks: 'all',
+                    enforce: true,
+                },
+            },
+        },
+    },
     resolve: {
         ...defaultConfig.resolve,
         alias: {
