@@ -41,6 +41,8 @@
   },
   "javascript": {
     "formatter": {
+      "bracketSpacing": true,
+      "delimiterSpacing": true,
       "quoteStyle": "single",
       "jsxQuoteStyle": "double",
       "semicolons": "always",
