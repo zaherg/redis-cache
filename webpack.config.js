@@ -5,17 +5,17 @@ import { basename } from 'path';
 import defaultConfig from '@wordpress/scripts/config/webpack.config.js';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
-const __file = fileURLToPath(import.meta.url);
-const __dir = dirname(__file);
+const __file = fileURLToPath( import.meta.url );
+const __dir = dirname( __file );
 
 export default {
     ...defaultConfig,
     entry: {
-        settings: resolve(__dir, 'frontend/settings/main.tsx'),
+        settings: resolve( __dir, 'frontend/settings/main.tsx' ),
     },
     output: {
         ...defaultConfig.output,
-        path: resolve(__dir, 'public/dist'),
+        path: resolve( __dir, 'public/dist' ),
         clean: {
             keep: /^\.gitignore$/,
         },
@@ -25,16 +25,18 @@ export default {
     },
     plugins: [
         ...defaultConfig.plugins,
-        new WebpackManifestPlugin({
+        new WebpackManifestPlugin( {
             fileName: '../manifest.json',
             publicPath: 'dist/',
-            generate(seed, files, entrypoints) {
+            generate( seed, files, entrypoints ) {
                 const assets = files.reduce(
-                    (assets, file) => {
-                        const path = posix.normalize(file.path);
-                        const name = path.endsWith('.css') ? posix.relative('dist', path) : posix.normalize(file.name);
+                    ( assets, file ) => {
+                        const path = posix.normalize( file.path );
+                        const name = path.endsWith( '.css' )
+                            ? posix.relative( 'dist', path )
+                            : posix.normalize( file.name );
 
-                        assets[name] = path;
+                        assets[ name ] = path;
                         return assets;
                     },
                     { ...seed },
@@ -43,24 +45,24 @@ export default {
                 return {
                     assets,
                     entrypoints: Object.fromEntries(
-                        Object.entries(entrypoints).map(([name, filenames]) => {
+                        Object.entries( entrypoints ).map( ( [ name, filenames ] ) => {
                             // Keep webpack's dependency order and align metadata with its script.
-                            const scripts = filenames.filter((filename) => filename.endsWith('.js'));
+                            const scripts = filenames.filter( ( filename ) => filename.endsWith( '.js' ) );
 
                             return [
                                 name,
                                 {
                                     assets: scripts
-                                        .map((script) => script.replace(/\.js$/, '.asset.php'))
-                                        .filter((asset) => filenames.includes(asset)),
+                                        .map( ( script ) => script.replace( /\.js$/, '.asset.php' ) )
+                                        .filter( ( asset ) => filenames.includes( asset ) ),
                                     scripts,
                                 },
                             ];
-                        }),
+                        } ),
                     ),
                 };
             },
-        }),
+        } ),
     ],
     optimization: {
         ...defaultConfig.optimization,
@@ -71,9 +73,9 @@ export default {
                 ...defaultConfig.optimization.splitChunks.cacheGroups,
                 style: {
                     ...defaultConfig.optimization.splitChunks.cacheGroups.style,
-                    name(_, chunks) {
-                        const chunkName = chunks[0].name;
-                        return `${dirname(chunkName)}/${basename(chunkName)}`;
+                    name( _, chunks ) {
+                        const chunkName = chunks[ 0 ].name;
+                        return `${ dirname( chunkName ) }/${ basename( chunkName ) }`;
                     },
                 },
                 defaultVendors: {
@@ -90,7 +92,7 @@ export default {
         ...defaultConfig.resolve,
         alias: {
             ...defaultConfig.resolve.alias,
-            '@redis-cache': resolve(__dir, 'frontend'),
+            '@redis-cache': resolve( __dir, 'frontend' ),
         },
     },
 };
