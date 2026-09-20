@@ -44,8 +44,12 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@types/react": "^19.3.0",
+    "@wordpress/autop": "^4.55.0",
     "@wordpress/dom-ready": "^4.55.0",
     "@wordpress/element": "^8.7.0",
+    "@wordpress/escape-html": "^3.55.0",
+    "@wordpress/html-entities": "^4.55.0",
+    "@wordpress/i18n": "^6.28.0",
     "@wordpress/scripts": "^35.0.0",
     "typescript": "^7.0.2",
     "webpack-manifest-plugin": "^6.0.1"

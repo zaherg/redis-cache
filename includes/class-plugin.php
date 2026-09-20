@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
+
 /**
  * Main plugin class
  *
@@ -22,14 +23,14 @@ class Plugin {
      *
      * @var string $page
      */
-    private $page = '';
+    private $page;
 
     /**
      * Settings page slug
      *
      * @var string $screen
      */
-    private $screen = '';
+    private $screen;
 
     /**
      * Allowed setting page actions
@@ -99,6 +100,7 @@ class Plugin {
         add_action( 'network_admin_notices', [ $this, 'show_admin_notices' ] );
 
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_styles' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_redis_cache_data' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_redis_metrics' ] );
 
@@ -183,25 +185,7 @@ class Plugin {
             wp_clear_scheduled_hook( 'redis_gather_metrics' );
         }
 
-        UI::register_tab(
-            'overview',
-            __( 'Overview', 'redis-cache' ),
-            [ 'default' => true ]
-        );
-
-        UI::register_tab(
-            'metrics',
-            __( 'Metrics', 'redis-cache' ),
-            [ 'disabled' => ! Metrics::is_enabled() ]
-        );
-
-        UI::register_tab(
-            'diagnostics',
-            __( 'Diagnostics', 'redis-cache' )
-        );
-
-        // Show the admin page.
-        require_once WP_REDIS_PLUGIN_PATH . '/includes/ui/settings.php';
+        echo '<div class="wrap" id="redis-cache"></div>';
     }
 
     /**
@@ -335,11 +319,13 @@ class Plugin {
             return;
         }
 
+        $assets = include WP_REDIS_PLUGIN_PATH . '/public/dist/settings.asset.php';
+
         wp_enqueue_style(
             'redis-cache',
-            trailingslashit( WP_REDIS_PLUGIN_DIR ) . 'assets/css/admin.css',
+            plugins_url( 'public/dist/' . (is_rtl() ? 'settings-rtl.css' : 'settings.css'), WP_REDIS_FILE ),
             [],
-            WP_REDIS_VERSION
+            $assets['version']
         );
     }
 
@@ -367,23 +353,49 @@ class Plugin {
         if ( ! in_array( $screen->id, $screens, true ) ) {
             return;
         }
-
+        $manifest = wp_json_file_decode(WP_REDIS_PLUGIN_PATH . '/public/manifest.json', [
+            "associative" => true
+        ]);
+        if($manifest === null) {
+            return;
+        }
         $clipboard = file_exists( ABSPATH . WPINC . '/js/clipboard.min.js' );
 
-        wp_enqueue_script(
-            'redis-cache',
-            plugins_url( 'assets/js/admin.js', WP_REDIS_FILE ),
-            array_merge( [ 'jquery', 'underscore' ], $clipboard ? [ 'clipboard' ] : [] ),
-            WP_REDIS_VERSION,
-            true
-        );
+        foreach($manifest['entrypoints']['settings']['scripts'] as $item) {
+            $handle = str_replace('.js', '', $item);
+            $asset_file = include WP_REDIS_PLUGIN_PATH . '/public/dist/'. $handle .'.asset.php';
 
-        wp_localize_script(
-            'redis-cache',
-            'rediscache',
-            [
+            wp_enqueue_script(
+                'redis-cache-' . $handle,
+                plugins_url( 'public/dist/' . $item, WP_REDIS_FILE ),
+                array_merge(
+                    array_merge( [ 'jquery', 'underscore' ], $clipboard ? [ 'clipboard' ] : [] ),
+                    $asset_file['dependencies']
+                ),
+                $asset_file['version'],
+                true
+            );
+        }
+    }
+
+    /**
+     * Enqueues admin data resources
+     *
+     * @return void
+     */
+    public function enqueue_redis_cache_data() {
+        $screen = get_current_screen();
+        wp_register_script( 'redis-cache-data', false, [], null, true );
+        wp_enqueue_script( 'redis-cache-data' );
+        wp_add_inline_script(
+            'redis-cache-data',
+            'window.rediscache = ' . wp_json_encode([
                 'jQuery' => 'jQuery',
+                'is_php7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
                 'is_wp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
+                'is_phpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
+                'is_phpredis_installed' => (bool) phpversion( 'redis' ),
+                'is_relay_installed' => (bool) phpversion( 'relay' ),
                 'chart_color' => (
                     defined( 'WP_REDIS_CHART_COLOR' )
                     && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
@@ -400,7 +412,8 @@ class Plugin {
                     'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
                     'pro' => 'Object Cache Pro',
                 ],
-            ]
+            ], JSON_HEX_TAG) .';',
+            'before'
         );
     }
 
