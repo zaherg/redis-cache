@@ -389,30 +389,47 @@ class Plugin {
         wp_enqueue_script( 'redis-cache-data' );
         wp_add_inline_script(
             'redis-cache-data',
-            'window.rediscache = ' . wp_json_encode([
-                'jQuery' => 'jQuery',
-                'is_php7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
-                'is_wp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
-                'is_phpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
-                'is_phpredis_installed' => (bool) phpversion( 'redis' ),
-                'is_relay_installed' => (bool) phpversion( 'relay' ),
-                'chart_color' => (
-                    defined( 'WP_REDIS_CHART_COLOR' )
-                    && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
-                ) ? WP_REDIS_CHART_COLOR : null,
-                'disable_pro' => $screen->id !== $this->screen
-                    || ( defined( 'WP_REDIS_DISABLE_BANNERS' ) && WP_REDIS_DISABLE_BANNERS )
-                    || self::acceleratewp_install(),
-                'l10n' => [
-                    'time' => __( 'Time', 'redis-cache' ),
-                    'bytes' => __( 'Bytes', 'redis-cache' ),
-                    'ratio' => __( 'Ratio', 'redis-cache' ),
-                    'calls' => __( 'Calls', 'redis-cache' ),
-                    'no_data' => __( 'Not enough data collected, yet.', 'redis-cache' ),
-                    'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
-                    'pro' => 'Object Cache Pro',
+            'window.rediscache = ' . wp_json_encode(
+                [
+                    'jQuery' => 'jQuery',
+                    'is_php7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
+                    'is_wp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
+                    'is_phpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
+                    'is_phpredis_installed' => (bool) phpversion( 'redis' ),
+                    'is_relay_installed' => (bool) phpversion( 'relay' ),
+                    'pro_url' => $this->link_to_ocp( 'settings' ),
+                    'chart_color' => (
+                        defined( 'WP_REDIS_CHART_COLOR' )
+                        && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
+                    ) ? WP_REDIS_CHART_COLOR : null,
+                    'disable_pro' => $screen->id !== $this->screen
+                        || ( defined( 'WP_REDIS_DISABLE_BANNERS' ) && WP_REDIS_DISABLE_BANNERS )
+                        || self::acceleratewp_install(),
+                    'l10n' => [
+                        'time' => __( 'Time', 'redis-cache' ),
+                        'bytes' => __( 'Bytes', 'redis-cache' ),
+                        'ratio' => __( 'Ratio', 'redis-cache' ),
+                        'calls' => __( 'Calls', 'redis-cache' ),
+                        'no_data' => __( 'Not enough data collected, yet.', 'redis-cache' ),
+                        'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
+                        'pro' => 'Object Cache Pro',
+                    ],
+                    'is_redis_disabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
+                    'connection' => [
+                        'status' => $this->get_redis_status(),
+                        'get_status' => $this->get_status(),
+                        'redis_client' => $this->get_redis_client_name(),
+                        'redis_prefix' => $this->get_redis_prefix(), // check
+                        'redis_maxttl' => $this->get_redis_maxttl(),
+                        'redis_version' => $this->get_redis_version(),
+                        'redis_connection' => $this->check_redis_connection(),
+                        'filesystem_allowed' => $this->is_file_mod_allowed(),
+                        'filesystem_writable' => $this->test_filesystem_writing(),
+                        'diagnostics' => $this->get_diagnostics(),
+                    ]
                 ],
-            ], JSON_HEX_TAG) .';',
+                JSON_HEX_TAG
+            ) . ';',
             'before'
         );
     }

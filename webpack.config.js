@@ -1,8 +1,8 @@
-import { dirname, posix, resolve } from 'node:path';
+import { basename, dirname, posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { basename } from 'path';
 
 import defaultConfig from '@wordpress/scripts/config/webpack.config.js';
+import postcssNesting from 'postcss-nesting';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 const __file = fileURLToPath( import.meta.url );
@@ -10,6 +10,39 @@ const __dir = dirname( __file );
 
 export default {
     ...defaultConfig,
+    module: {
+        ...defaultConfig.module,
+        rules: defaultConfig.module.rules.map( ( rule ) => {
+            if ( ! Array.isArray( rule.use ) ) {
+                return rule;
+            }
+
+            return {
+                ...rule,
+                use: rule.use.map( ( loader ) => {
+                    const postcssOptions = loader.options?.postcssOptions;
+                    if ( ! postcssOptions ) {
+                        return loader;
+                    }
+
+                    return {
+                        ...loader,
+                        options: {
+                            ...loader.options,
+                            postcssOptions: {
+                                ...postcssOptions,
+                                // WordPress leaves CSS nesting intact; flatten it for browsers without native support.
+                                // Run after imports, before prefixing and minification.
+                                plugins: postcssOptions.plugins.flatMap( ( plugin ) =>
+                                    plugin.postcssPlugin === 'autoprefixer' ? [ postcssNesting(), plugin ] : [ plugin ],
+                                ),
+                            },
+                        },
+                    };
+                } ),
+            };
+        } ),
+    },
     entry: {
         settings: resolve( __dir, 'frontend/settings/main.tsx' ),
     },
