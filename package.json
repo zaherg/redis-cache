@@ -45,6 +45,7 @@
     "@biomejs/biome": "^2.5.14",
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
+    "@wordpress/api-fetch": "^7.56.0",
     "@wordpress/autop": "^4.55.0",
     "@wordpress/components": "^40.1.0",
     "@wordpress/dom-ready": "^4.55.0",

@@ -32,7 +32,7 @@ export const Metrics = ( { isLoading = false }: { isLoading?: boolean } ) => (
                 <MetricsSkeleton />
             ) : (
                 <div className="metrics-card__empty">
-                    <MetricsInactive />
+                    { <MetricsInactive /> }
                     <h3>{ __( 'No chart data available', 'redis-cache' ) }</h3>
                     <p>{ __( 'Enable object cache to collect data.', 'redis-cache' ) }</p>
                     <p className="metrics-card__hint">
@@ -40,6 +40,50 @@ export const Metrics = ( { isLoading = false }: { isLoading?: boolean } ) => (
                     </p>
                 </div>
             ) }
+
+            <div id="widget-redis-stats" className="card">
+                <ul>
+                    <li>
+                        <a
+                            href="#1"
+                            className="active"
+                            data-chart="time"
+                            title="<?php esc_attr_e( 'The total amount of time (in milliseconds) it took Redis to return cache data.', 'redis-cache' ); ?>"
+                        >
+                            Time
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#2"
+                            data-chart="bytes"
+                            title="<?php esc_attr_e( 'The total amount of bytes that was retrieved from Redis.', 'redis-cache' ); ?>"
+                        >
+                            Bytes
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#3"
+                            data-chart="ratio"
+                            title="<?php esc_attr_e( 'The hit/miss ratio of cache data that was already cached.', 'redis-cache' ); ?>"
+                        >
+                            Ratio
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="#4"
+                            data-chart="calls"
+                            title="<?php esc_attr_e( 'The total amount of commands sent to Redis.', 'redis-cache' ); ?>"
+                        >
+                            Calls
+                        </a>
+                    </li>
+                </ul>
+
+                <div id="redis-stats-chart"></div>
+            </div>
         </Card.Content>
     </Card.Root>
 );
