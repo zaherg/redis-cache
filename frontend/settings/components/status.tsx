@@ -19,9 +19,6 @@ const fileSystemLabel = filesystem_writable
 
 export const Status = () => {
     const [ notifications, setNotifications ] = useState< MessageResponse | undefined >();
-    const flushCache = async () => setNotifications( await flush() );
-    const enableCache = async () => setNotifications( await enable() );
-    const disableCache = async () => setNotifications( await disable() );
 
     return (
         <>
@@ -62,37 +59,51 @@ export const Status = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="status-card__action-buttons">
-                        <Button
-                            title={ __( 'Flush Cache', 'redis-cache' ) }
-                            variant="primary"
-                            role="button"
-                            className="button-large"
-                            onClick={ flushCache }
-                        >
-                            { __( 'Flush Cache', 'redis-cache' ) }
-                        </Button>
-                        <Button
-                            title={ __( 'Disable Object Cache', 'redis-cache' ) }
-                            variant="secondary"
-                            role="button"
-                            className="button-large"
-                            onClick={ disableCache }
-                        >
-                            { __( 'Disable Object Cache', 'redis-cache' ) }
-                        </Button>
-                        <Button
-                            title={ __( 'Enable Object Cache', 'redis-cache' ) }
-                            variant="secondary"
-                            role="button"
-                            className="button-large"
-                            onClick={ enableCache }
-                        >
-                            { __( 'Enable Object Cache', 'redis-cache' ) }
-                        </Button>
-                    </div>
+                    <ActionButtons setNotifications={ setNotifications } />
                 </Card.Content>
             </Card.Root>
         </>
+    );
+};
+
+const ActionButtons = ( {
+    setNotifications,
+}: {
+    setNotifications: ( value: MessageResponse | undefined ) => void;
+} ) => {
+    const flushCache = async () => setNotifications( await flush() );
+    const enableCache = async () => setNotifications( await enable() );
+    const disableCache = async () => setNotifications( await disable() );
+
+    return (
+        <div className="status-card__action-buttons">
+            <Button
+                title={ __( 'Flush Cache', 'redis-cache' ) }
+                variant="primary"
+                role="button"
+                className="button-large"
+                onClick={ flushCache }
+            >
+                { __( 'Flush Cache', 'redis-cache' ) }
+            </Button>
+            <Button
+                title={ __( 'Disable Object Cache', 'redis-cache' ) }
+                variant="secondary"
+                role="button"
+                className="button-large"
+                onClick={ disableCache }
+            >
+                { __( 'Disable Object Cache', 'redis-cache' ) }
+            </Button>
+            <Button
+                title={ __( 'Enable Object Cache', 'redis-cache' ) }
+                variant="secondary"
+                role="button"
+                className="button-large"
+                onClick={ enableCache }
+            >
+                { __( 'Enable Object Cache', 'redis-cache' ) }
+            </Button>
+        </div>
     );
 };
