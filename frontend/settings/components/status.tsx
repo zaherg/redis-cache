@@ -4,7 +4,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
 
-import { flush, type MessageResponse } from '@redis-cache/api/cache';
+import { flush } from '@redis-cache/api/cache';
+import type { MessageResponse } from '@redis-cache/api/types';
 import { Notification } from '@redis-cache/settings/components/notification';
 import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
 

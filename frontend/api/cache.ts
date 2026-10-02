@@ -1,23 +1,21 @@
 import apiFetch from '@wordpress/api-fetch';
 
-export interface MessageResponse {
-    type: 'error' | 'success';
-    message: string;
-}
+import type { MessageResponse } from '@redis-cache/api/types';
 
-export const flush = async () => {
-    const controller = new AbortController();
-
-    return ( await apiFetch( {
-        signal: controller?.signal,
+export const flush = async () =>
+    ( await apiFetch( {
         method: 'post',
         path: 'redis-cache/v1/flush-cache',
-    } ).catch( ( error ) => {
-        if ( error.name === 'AbortError' ) {
-            console.log( 'Request has been aborted' );
-        }
-        return error;
-    } ) ) as MessageResponse;
-};
-export const enable = () => {};
-export const disable = () => {};
+    } ).catch( ( error ) => error ) ) as MessageResponse;
+
+export const enable = async () =>
+    ( await apiFetch( {
+        method: 'post',
+        path: 'redis-cache/v1/enable-cache',
+    } ).catch( ( error ) => error ) ) as MessageResponse;
+
+export const disable = async () =>
+    ( await apiFetch( {
+        method: 'post',
+        path: 'redis-cache/v1/disable-cache',
+    } ).catch( ( error ) => error ) ) as MessageResponse;
