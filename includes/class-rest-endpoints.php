@@ -68,11 +68,14 @@ class Rest_Endpoints {
      * @return \WP_REST_Response
      */
     public function disable_object_cache() {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         global $wp_filesystem;
-        $url = Plugin::instance()->action_link( 'enable-cache' );
+
+        $plugin = Plugin::instance();
+        $url = $plugin->action_link( 'enable-cache' );
 
         // do we have filesystem credentials?
-        if ( ! Plugin::instance()->initialize_filesystem( $url, true ) ) {
+        if ( ! $plugin->initialize_filesystem( $url, true ) ) {
             return new \WP_REST_Response( null, 500 );
         }
 
@@ -109,11 +112,14 @@ class Rest_Endpoints {
      * @return \WP_REST_Response
      */
     public function enable_object_cache() {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         global $wp_filesystem;
-        $url = Plugin::instance()->action_link( 'enable-cache' );
+
+        $plugin = Plugin::instance();
+        $url = $plugin->action_link( 'enable-cache' );
 
         // do we have filesystem credentials?
-        if ( ! Plugin::instance()->initialize_filesystem( $url, true ) ) {
+        if ( ! $plugin->initialize_filesystem( $url, true ) ) {
             return new \WP_REST_Response( null, 500 );
         }
 

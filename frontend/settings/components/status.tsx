@@ -4,7 +4,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
 
-import { flush } from '@redis-cache/api/cache';
+import { disable, enable, flush } from '@redis-cache/api/cache';
 import type { MessageResponse } from '@redis-cache/api/types';
 import { Notification } from '@redis-cache/settings/components/notification';
 import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
@@ -19,10 +19,9 @@ const fileSystemLabel = filesystem_writable
 
 export const Status = () => {
     const [ notifications, setNotifications ] = useState< MessageResponse | undefined >();
-    const flushCache = async () => {
-        const response = await flush();
-        setNotifications( response );
-    };
+    const flushCache = async () => setNotifications( await flush() );
+    const enableCache = async () => setNotifications( await enable() );
+    const disableCache = async () => setNotifications( await disable() );
 
     return (
         <>
@@ -78,8 +77,18 @@ export const Status = () => {
                             variant="secondary"
                             role="button"
                             className="button-large"
+                            onClick={ disableCache }
                         >
                             { __( 'Disable Object Cache', 'redis-cache' ) }
+                        </Button>
+                        <Button
+                            title={ __( 'Enable Object Cache', 'redis-cache' ) }
+                            variant="secondary"
+                            role="button"
+                            className="button-large"
+                            onClick={ enableCache }
+                        >
+                            { __( 'Enable Object Cache', 'redis-cache' ) }
                         </Button>
                     </div>
                 </Card.Content>
