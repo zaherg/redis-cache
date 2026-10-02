@@ -1,5 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
-
+<?php
 /**
  * Main plugin class
  *
@@ -79,6 +78,7 @@ class Plugin {
         }
 
         Metrics::init();
+        new Rest_Endpoints();
 
         $this->add_actions_and_filters();
     }
@@ -376,6 +376,14 @@ class Plugin {
                 true
             );
         }
+
+        wp_enqueue_script(
+            'redis-cache-admin-script',
+            plugins_url( 'assets/js/admin.js', WP_REDIS_FILE ),
+            array_merge( [ 'jquery', 'underscore' ], $clipboard ? [ 'clipboard' ] : [] ),
+            WP_REDIS_VERSION,
+            true
+        );
     }
 
     /**
@@ -385,6 +393,24 @@ class Plugin {
      */
     public function enqueue_redis_cache_data() {
         $screen = get_current_screen();
+        if ( ! isset( $screen->id ) ) {
+            return;
+        }
+
+        $screens = [
+            $this->screen,
+            'dashboard',
+            'dashboard-network',
+            'edit-shop_order',
+            'edit-product',
+            'woocommerce_page_wc-admin',
+        ];
+
+        if ( ! in_array( $screen->id, $screens, true ) ) {
+            return;
+        }
+
+
         wp_register_script( 'redis-cache-data', false, [], null, true );
         wp_enqueue_script( 'redis-cache-data' );
         wp_add_inline_script(
@@ -397,7 +423,11 @@ class Plugin {
                     'is_phpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
                     'is_phpredis_installed' => (bool) phpversion( 'redis' ),
                     'is_relay_installed' => (bool) phpversion( 'relay' ),
-                    'pro_url' => $this->link_to_ocp( 'settings' ),
+                    'metrics' => [
+                        'minTime' => $screen->id === $this->screen
+                            ? Metrics::max_time()
+                            : MINUTE_IN_SECONDS * 30
+                    ],
                     'chart_color' => (
                         defined( 'WP_REDIS_CHART_COLOR' )
                         && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
@@ -415,6 +445,13 @@ class Plugin {
                         'pro' => 'Object Cache Pro',
                     ],
                     'is_redis_disabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
+                    'is_cache_dropin_valid' => $this->validate_object_cache_dropin(),
+                    'links' => [
+                        'objectCachePro' => $this->link_to_ocp( 'settings' ),
+                        'enable_cache' => $this->action_link('enable-cache'),
+                        'disable_cache' => $this->action_link('disable-cache'),
+                        'flush_cache' => $this->action_link('flush-cache'),
+                    ],
                     'connection' => [
                         'status' => $this->get_redis_status(),
                         'get_status' => $this->get_status(),
@@ -474,7 +511,7 @@ class Plugin {
 
         $metrics = Metrics::get( $min_time );
 
-        wp_localize_script( 'redis-cache', 'rediscache_metrics', $metrics );
+        wp_localize_script( 'redis-cache-data', 'rediscache_metrics', $metrics );
     }
 
     /**
