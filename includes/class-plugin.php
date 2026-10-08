@@ -418,21 +418,21 @@ class Plugin {
             'window.rediscache = ' . wp_json_encode(
                 [
                     'jQuery' => 'jQuery',
-                    'is_php7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
-                    'is_wp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
-                    'is_phpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
-                    'is_phpredis_installed' => (bool) phpversion( 'redis' ),
-                    'is_relay_installed' => (bool) phpversion( 'relay' ),
+                    'isPhp7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
+                    'isWp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
+                    'isPhpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
+                    'isPhpredisInstalled' => (bool) phpversion( 'redis' ),
+                    'isRelayInstalled' => (bool) phpversion( 'relay' ),
                     'metrics' => [
                         'minTime' => $screen->id === $this->screen
                             ? Metrics::max_time()
                             : MINUTE_IN_SECONDS * 30
                     ],
-                    'chart_color' => (
+                    'chartColor' => (
                         defined( 'WP_REDIS_CHART_COLOR' )
                         && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
                     ) ? WP_REDIS_CHART_COLOR : null,
-                    'disable_pro' => $screen->id !== $this->screen
+                    'disableProBanner' => $screen->id !== $this->screen
                         || ( defined( 'WP_REDIS_DISABLE_BANNERS' ) && WP_REDIS_DISABLE_BANNERS )
                         || self::acceleratewp_install(),
                     'l10n' => [
@@ -444,24 +444,24 @@ class Plugin {
                         'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
                         'pro' => 'Object Cache Pro',
                     ],
-                    'is_redis_disabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
-                    'is_cache_dropin_valid' => $this->validate_object_cache_dropin(),
+                    'isRedisDisabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
+                    'isCacheDropinValid' => $this->validate_object_cache_dropin(),
                     'links' => [
                         'objectCachePro' => $this->link_to_ocp( 'settings' ),
-                        'enable_cache' => $this->action_link('enable-cache'),
-                        'disable_cache' => $this->action_link('disable-cache'),
-                        'flush_cache' => $this->action_link('flush-cache'),
+                        'enableCache' => $this->action_link('enable-cache'),
+                        'disableCache' => $this->action_link('disable-cache'),
+                        'flushCache' => $this->action_link('flush-cache'),
                     ],
                     'connection' => [
                         'status' => $this->get_redis_status(),
-                        'get_status' => $this->get_status(),
-                        'redis_client' => $this->get_redis_client_name(),
-                        'redis_prefix' => $this->get_redis_prefix(), // check
-                        'redis_maxttl' => $this->get_redis_maxttl(),
-                        'redis_version' => $this->get_redis_version(),
-                        'redis_connection' => $this->check_redis_connection(),
-                        'filesystem_allowed' => $this->is_file_mod_allowed(),
-                        'filesystem_writable' => $this->test_filesystem_writing(),
+                        'getStatus' => $this->get_status(),
+                        'clientName' => $this->get_redis_client_name(),
+                        'prefix' => $this->get_redis_prefix(), // check
+                        'maxTtl' => $this->get_redis_maxttl(),
+                        'version' => $this->get_redis_version(),
+                        'connection' => $this->check_redis_connection(),
+                        'filesystemAllowed' => $this->is_file_mod_allowed(),
+                        'filesystemWritable' => $this->test_filesystem_writing(),
                         'diagnostics' => $this->get_diagnostics(),
                     ]
                 ],

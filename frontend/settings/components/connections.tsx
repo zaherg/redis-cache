@@ -23,10 +23,10 @@ export const Connections = () => {
             <Card.Content className="connections-card__content">
                 <table className="connections-card__table font-md" aria-label={ __( 'Connection', 'redis-cache' ) }>
                     <tbody>
-                        { connection.redis_client && (
+                        { connection.clientName && (
                             <tr>
                                 <th scope="row">{ __( 'Client', 'redis-cache' ) }</th>
-                                <td>{ connection.redis_client }</td>
+                                <td>{ connection.clientName }</td>
                             </tr>
                         ) }
                         { ( diagnostics.host || diagnostics?.path ) && (
@@ -106,10 +106,10 @@ export const Connections = () => {
                             </tr>
                         ) }
 
-                        { connection.redis_version && (
+                        { connection.version && (
                             <tr>
                                 <th scope="row">{ __( 'Redis Version', 'redis-cache' ) }</th>
-                                <td>{ connection.redis_version ?? __( 'Unknown', 'redis-cache' ) }</td>
+                                <td>{ connection.version ?? __( 'Unknown', 'redis-cache' ) }</td>
                             </tr>
                         ) }
 

@@ -15,11 +15,17 @@ const features = [
     __( 'Optimized for WooCommerce, Jetpack & Yoast SEO', 'redis-cache' ),
 ];
 
-const { is_php7, disable_pro, is_phpredis_installed, is_relay_installed, is_phpredis311, pro_url } =
-    window.rediscache ?? {};
+const {
+    isPhp7,
+    disableProBanner,
+    isPhpredisInstalled,
+    isRelayInstalled,
+    isPhpredis311,
+    links: { objectCachePro: objectCacheProLink },
+} = window.rediscache ?? {};
 
 export const ObjectCachePro = () => {
-    if ( disable_pro ) return;
+    if ( disableProBanner ) return;
     return (
         <div className="section-pro">
             <Card.Root>
@@ -58,14 +64,14 @@ export const ObjectCachePro = () => {
                         ) ) }
                     </ul>
                     <p>
-                        <a className="button button-primary" target="_blank" rel="noopener" href={ pro_url }>
+                        <a className="button button-primary" target="_blank" rel="noopener" href={ objectCacheProLink }>
                             { __( 'Learn more', 'redis-cache' ) }
                         </a>
                     </p>
                 </Card.Content>
             </Card.Root>
             <p className="compatibility">
-                { is_php7 && ( is_phpredis311 || is_relay_installed ) ? (
+                { isPhp7 && ( isPhpredis311 || isRelayInstalled ) ? (
                     <>
                         <span className="dashicons dashicons-yes"></span>
                         <span>
@@ -88,7 +94,7 @@ export const ObjectCachePro = () => {
                 ) }
             </p>
             <ul>
-                { ! is_php7 && (
+                { ! isPhp7 && (
                     <li>
                         { sprintf(
                             // translators: %s = PHP Version.
@@ -100,11 +106,11 @@ export const ObjectCachePro = () => {
                         ) }
                     </li>
                 ) }
-                { ! is_phpredis_installed && (
+                { ! isPhpredisInstalled && (
                     <li>{ __( 'The PhpRedis extension is not installed.', 'redis-cache' ) }</li>
                 ) }
 
-                { ! is_phpredis311 && (
+                { ! isPhpredis311 && (
                     <li>
                         { sprintf(
                             // translators: %s = Version of the PhpRedis extension.

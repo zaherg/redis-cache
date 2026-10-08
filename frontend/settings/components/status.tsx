@@ -9,11 +9,11 @@ import type { MessageResponse } from '@redis-cache/api/types';
 import { Notification } from '@redis-cache/settings/components/notification';
 import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
 
-const { status, get_status, filesystem_allowed, filesystem_writable } = window.rediscache?.connection ?? {};
+const { status, getStatus, filesystemAllowed, filesystemWritable } = window.rediscache?.connection ?? {};
 
-const fileSystemLabel = filesystem_writable
+const fileSystemLabel = filesystemWritable
     ? __( 'File System Writeable', 'redis-cache' )
-    : ! filesystem_allowed
+    : ! filesystemAllowed
       ? __( 'File System Disabled', 'redis-cache' )
       : __( 'File System Not writeable', 'redis-cache' );
 
@@ -51,10 +51,10 @@ export const Status = () => {
                                     typeof status === 'string' || status === null ? 'error-circle' : 'active-circle'
                                 }
                             >
-                                { sprintf( __( 'Redis %s', 'redis-cache' ), get_status ) }
+                                { sprintf( __( 'Redis %s', 'redis-cache' ), getStatus ) }
                             </div>
                             <div className="active-circle">{ __( 'Drop-in valid', 'redis-cache' ) }</div>
-                            <div className={ filesystem_writable ? 'active-circle' : 'error-circle' }>
+                            <div className={ filesystemWritable ? 'active-circle' : 'error-circle' }>
                                 { fileSystemLabel }
                             </div>
                         </div>

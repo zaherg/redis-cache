@@ -20,26 +20,32 @@ declare global {
     interface Window {
         rediscache: {
             jQuery: string;
-            is_php7: boolean;
-            is_wp7: boolean;
-            is_phpredis311: boolean;
-            is_phpredis_installed: boolean;
-            is_relay_installed: boolean;
-            pro_url: string;
-            chart_color: string | null;
-            disable_pro: boolean;
+            isPhp7: boolean;
+            isWp7: boolean;
+            isPhpredis311: boolean;
+            isPhpredisInstalled: boolean;
+            isRelayInstalled: boolean;
+            isRedisDisabled: boolean;
+            chartColor: string | null;
+            disableProBanner: boolean;
             l10n: Record< string, string >;
-            is_redis_disabled: boolean;
+            isCacheDropinValid: boolean;
+            links: {
+                objectCachePro: string;
+                enableCache: string;
+                disableCache: string;
+                flushCache: string;
+            };
             connection: {
                 status: boolean | null;
-                get_status: string;
-                redis_client: string | null;
-                redis_prefix: string | null;
-                redis_maxttl: string | null;
-                redis_version: string | null;
-                redis_connection: boolean | null;
-                filesystem_allowed: boolean;
-                filesystem_writable: boolean;
+                getStatus: string;
+                clientName: string | null;
+                prefix: string | null;
+                maxTtl: string | null;
+                version: string | null;
+                connection: boolean | null;
+                filesystemAllowed: boolean;
+                filesystemWritable: boolean;
                 diagnostics: RedisDiagnostics | null;
             };
         };

@@ -7,14 +7,14 @@ import { Notification } from '@redis-cache/settings/components/notification';
 import { ObjectCachePro } from '@redis-cache/settings/components/object-cache-pro';
 import { Status } from '@redis-cache/settings/components/status';
 
-const { is_redis_disabled } = window.rediscache ?? {};
+const { isRedisDisabled } = window.rediscache ?? {};
 
 export const Dashboard = () => (
     <>
         <h1 className="mb-3">{ __( 'Redis Object Cache', 'redis-cache' ) }</h1>
         <div className="columns">
             <div className="content-column flex flex-1 flex-col gap-y-4">
-                { is_redis_disabled && (
+                { isRedisDisabled && (
                     <Notification
                         type={ 'error' }
                         message={
