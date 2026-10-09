@@ -51,13 +51,13 @@
     "@wordpress/autop": "^4.55.0",
     "@wordpress/components": "^42.0.0",
     "@wordpress/dom-ready": "^4.55.0",
-    "@wordpress/element": "^8.8.0",
+    "@wordpress/element": "^9.0.0",
     "@wordpress/escape-html": "^3.55.0",
     "@wordpress/html-entities": "^4.55.0",
     "@wordpress/i18n": "^6.28.0",
-    "@wordpress/icons": "^16.0.0",
-    "@wordpress/scripts": "^35.0.0",
-    "@wordpress/ui": "^0.22.0",
+    "@wordpress/icons": "^18.0.0",
+    "@wordpress/scripts": "^36.1.0",
+    "@wordpress/ui": "^0.24.0",
     "postcss-nesting": "^14.0.1",
     "webpack-manifest-plugin": "^6.0.1"
   }

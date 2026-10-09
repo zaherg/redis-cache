@@ -10,6 +10,8 @@ interface NotificationProbs {
     className?: string;
 }
 
+const { Root, Title, Description, CloseIconButton, } = Notice;
+
 export const Notification = ( {
     type,
     message,
@@ -18,9 +20,9 @@ export const Notification = ( {
     onClose,
     className = '',
 }: NotificationProbs ) => (
-    <Notice.Root intent={ type } className={ className }>
-        { ! hideTitle && <Notice.Title>{ __( 'Notice', 'redis-cache' ) }</Notice.Title> }
-        <Notice.Description>{ message }</Notice.Description>
-        { ! hideCloseButton && <Notice.CloseIcon onClick={ onClose } /> }
-    </Notice.Root>
+    <Root intent={ type } className={ className }>
+        { ! hideTitle && <Title>{ __( 'Notice', 'redis-cache' ) }</Title> }
+        <Description>{ message }</Description>
+        { ! hideCloseButton && <CloseIconButton onClick={ onClose } /> }
+    </Root>
 );
