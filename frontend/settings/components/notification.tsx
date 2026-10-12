@@ -10,7 +10,7 @@ interface NotificationProbs {
     className?: string;
 }
 
-const { Root, Title, Description, CloseIconButton, } = Notice;
+const { Root, Title, Description, CloseIconButton } = Notice;
 
 export const Notification = ( {
     type,

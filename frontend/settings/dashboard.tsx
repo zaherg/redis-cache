@@ -6,6 +6,7 @@ import { Metrics } from '@redis-cache/settings/components/metrics';
 import { Notification } from '@redis-cache/settings/components/notification';
 import { ObjectCachePro } from '@redis-cache/settings/components/object-cache-pro';
 import { Status } from '@redis-cache/settings/components/status';
+import { SettingsContextProvider } from '@redis-cache/settings/data/settings';
 
 const { isRedisDisabled } = window.rediscache ?? {};
 
@@ -31,15 +32,17 @@ export const Dashboard = () => (
                         }
                     />
                 ) }
-                <section className="status">
-                    <Status />
-                </section>
-                <section className="metrics">
-                    <Metrics isLoading={ true } />
-                </section>
-                <section className="connections">
-                    <Connections />
-                </section>
+                <SettingsContextProvider>
+                    <section className="status">
+                        <Status />
+                    </section>
+                    <section className="metrics">
+                        <Metrics isLoading={ true } />
+                    </section>
+                    <section className="connections">
+                        <Connections />
+                    </section>
+                </SettingsContextProvider>
             </div>
             <div className="sidebar-column shrink-0">
                 <ObjectCachePro />

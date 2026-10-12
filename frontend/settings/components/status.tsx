@@ -1,5 +1,5 @@
 import { Button } from '@wordpress/components';
-import { createInterpolateElement, useState } from '@wordpress/element';
+import { createInterpolateElement, useContext, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
@@ -7,18 +7,19 @@ import { Card } from '@wordpress/ui';
 import { disable, enable, flush } from '@redis-cache/api/cache';
 import type { MessageResponse } from '@redis-cache/api/types';
 import { Notification } from '@redis-cache/settings/components/notification';
+import { SettingsContext } from '@redis-cache/settings/data/settings';
 import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
-
-const { status, getStatus, filesystemAllowed, filesystemWritable } = window.rediscache?.connection ?? {};
-
-const fileSystemLabel = filesystemWritable
-    ? __( 'File System Writeable', 'redis-cache' )
-    : ! filesystemAllowed
-      ? __( 'File System Disabled', 'redis-cache' )
-      : __( 'File System Not writeable', 'redis-cache' );
 
 export const Status = () => {
     const [ notifications, setNotifications ] = useState< MessageResponse | undefined >();
+    const { settings } = useContext( SettingsContext );
+    const { status, getStatus, filesystemAllowed, filesystemWritable } = settings?.connection || {};
+
+    const fileSystemLabel = filesystemWritable
+        ? __( 'File System Writeable', 'redis-cache' )
+        : ! filesystemAllowed
+          ? __( 'File System Disabled', 'redis-cache' )
+          : __( 'File System Not writeable', 'redis-cache' );
 
     return (
         <>
