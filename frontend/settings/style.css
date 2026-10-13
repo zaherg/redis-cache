@@ -213,6 +213,7 @@
 }
 
 #redis-cache .content-column {
+    min-inline-size: 0;
     margin-bottom: 3em;
 }
 
@@ -278,29 +279,43 @@
 
 #redis-cache .content-column .status-card__content {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    column-gap: 1.5rem;
+    gap: 1.5rem;
 }
 #redis-cache .content-column .status-card__status {
     display: flex;
     flex-direction: column;
-    row-gap: 1.5rem;
-    flex-grow: 1;
+    gap: 1rem;
+    flex: 1 1 18rem;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
 }
 
 #redis-cache .content-column .status-card__features-stats {
     display: flex;
-    flex-direction: row;
-    column-gap: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
     color: var(--redis-cache-gray);
 }
 
 #redis-cache .content-column .status-card__action-buttons {
     display: flex;
-    flex-direction: row;
-    column-gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+    max-inline-size: 100%;
     justify-content: end;
+}
+
+#redis-cache .content-column .status-card__action-buttons .components-button {
+    max-inline-size: 100%;
+    min-block-size: 44px;
+    block-size: auto;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
 }
 
 #redis-cache .content-column .metrics-card__metrics {

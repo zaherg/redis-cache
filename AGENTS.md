@@ -1,0 +1,2 @@
+- Do not jump into implementations right away, talk with the user, provide the solution and be concise.
+- Do not write any tests for now.

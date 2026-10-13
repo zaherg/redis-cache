@@ -34,7 +34,7 @@ export const Status = () => {
             ) }
             <Card.Root className="status-card">
                 <Card.Content className="status-card__content">
-                    <div className="justify-start">
+                    <div className="shrink-0">
                         <Icon icon={ CheckFilled } size={ 48 } className="green" />
                     </div>
                     <div className="status-card__status">
