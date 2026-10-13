@@ -14,6 +14,17 @@ interface RedisDiagnostics {
     servers?: string[];
 }
 
+interface FileSystemWritingErrors {
+    disallowed?: [];
+    fs?: [];
+    writable?: [];
+}
+
+interface SerializedWpError {
+    errors: Record< string, string[] >;
+    error_data: Record< string, unknown > | FileSystemWritingErrors | [];
+}
+
 export interface RedisCache {
     jQuery: string;
     isPhp7: boolean;
@@ -38,7 +49,7 @@ export interface RedisCache {
         version: string | null;
         connection: boolean | null;
         filesystemAllowed: boolean;
-        filesystemWritable: boolean;
+        filesystemWritable: boolean | SerializedWpError;
         diagnostics: RedisDiagnostics | null;
     };
 }

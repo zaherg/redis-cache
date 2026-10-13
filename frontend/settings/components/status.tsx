@@ -15,11 +15,14 @@ export const Status = () => {
     const { settings } = useContext( SettingsContext );
     const { status, getStatus, filesystemAllowed, filesystemWritable } = settings?.connection || {};
 
-    const fileSystemLabel = filesystemWritable
-        ? __( 'File System Writeable', 'redis-cache' )
-        : ! filesystemAllowed
-          ? __( 'File System Disabled', 'redis-cache' )
-          : __( 'File System Not writeable', 'redis-cache' );
+    console.log( settings.connection );
+
+    const fileSystemLabel =
+        filesystemWritable === true
+            ? __( 'File System Writeable', 'redis-cache' )
+            : ! filesystemAllowed
+              ? __( 'File System Disabled', 'redis-cache' )
+              : __( 'File System Not writeable', 'redis-cache' );
 
     return (
         <>
@@ -55,7 +58,7 @@ export const Status = () => {
                                 { sprintf( __( 'Redis %s', 'redis-cache' ), getStatus ) }
                             </div>
                             <div className="active-circle">{ __( 'Drop-in valid', 'redis-cache' ) }</div>
-                            <div className={ filesystemWritable ? 'active-circle' : 'error-circle' }>
+                            <div className={ filesystemWritable === true ? 'active-circle' : 'error-circle' }>
                                 { fileSystemLabel }
                             </div>
                         </div>
@@ -72,39 +75,46 @@ const ActionButtons = ( {
 }: {
     setNotifications: ( value: MessageResponse | undefined ) => void;
 } ) => {
+    const { settings } = useContext( SettingsContext );
     const flushCache = async () => setNotifications( await flush() );
     const enableCache = async () => setNotifications( await enable() );
     const disableCache = async () => setNotifications( await disable() );
 
     return (
         <div className="status-card__action-buttons">
-            <Button
-                title={ __( 'Flush Cache', 'redis-cache' ) }
-                variant="primary"
-                role="button"
-                className="button-large"
-                onClick={ flushCache }
-            >
-                { __( 'Flush Cache', 'redis-cache' ) }
-            </Button>
-            <Button
-                title={ __( 'Disable Object Cache', 'redis-cache' ) }
-                variant="secondary"
-                role="button"
-                className="button-large"
-                onClick={ disableCache }
-            >
-                { __( 'Disable Object Cache', 'redis-cache' ) }
-            </Button>
-            <Button
-                title={ __( 'Enable Object Cache', 'redis-cache' ) }
-                variant="secondary"
-                role="button"
-                className="button-large"
-                onClick={ enableCache }
-            >
-                { __( 'Enable Object Cache', 'redis-cache' ) }
-            </Button>
+            { settings.connection.status && (
+                <Button
+                    title={ __( 'Flush Cache', 'redis-cache' ) }
+                    variant="primary"
+                    role="button"
+                    className="button-large"
+                    onClick={ flushCache }
+                >
+                    { __( 'Flush Cache', 'redis-cache' ) }
+                </Button>
+            ) }
+            { settings.isCacheDropinValid && settings.connection.filesystemAllowed && (
+                <Button
+                    title={ __( 'Disable Object Cache', 'redis-cache' ) }
+                    variant="secondary"
+                    role="button"
+                    className="button-large"
+                    onClick={ disableCache }
+                >
+                    { __( 'Disable Object Cache', 'redis-cache' ) }
+                </Button>
+            ) }
+            { settings.connection.connection && settings.connection.filesystemWritable === true && (
+                <Button
+                    title={ __( 'Enable Object Cache', 'redis-cache' ) }
+                    variant="secondary"
+                    role="button"
+                    className="button-large"
+                    onClick={ enableCache }
+                >
+                    { __( 'Enable Object Cache', 'redis-cache' ) }
+                </Button>
+            ) }
         </div>
     );
 };
