@@ -223,15 +223,13 @@ class Rest_Endpoints {
     }
 
     /**
-     * Replace the object cache drop-in with the bundled version without flushing Redis.
+     * Return the plugin's status and configuration data.
      *
      * @return WP_REST_Response
      */
     public function get_data() {
         return new WP_REST_Response(
-            [
-                'config' => 'yes',
-            ],
+            Plugin::instance()->get_data(),
             200
         );
     }
@@ -242,7 +240,7 @@ class Rest_Endpoints {
      * @param WP_REST_Request $request Request with an optional minTime parameter in seconds. Defaults to 1800 (30 minutes).
      * @return WP_REST_Response Response containing the recorded metrics.
      */
-    public function get_metrics(WP_REST_Request $request ) {
+    public function get_metrics( WP_REST_Request $request ) {
         if ( ! Metrics::is_enabled() ) {
             return new WP_REST_Response(
                 [

@@ -15,7 +15,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Main plugin class definition
  */
-class Plugin {
+class Plugin
+{
 
     /**
      * Settings page uri
@@ -55,8 +56,9 @@ class Plugin {
      *
      * @return Plugin
      */
-    public static function instance() {
-        if ( ! isset( self::$instance ) ) {
+    public static function instance()
+    {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 
@@ -66,10 +68,11 @@ class Plugin {
     /**
      * Constructor
      */
-    private function __construct() {
+    private function __construct()
+    {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-        if ( is_multisite() ) {
+        if (is_multisite()) {
             $this->page = 'settings.php?page=redis-cache';
             $this->screen = 'settings_page_redis-cache-network';
         } else {
@@ -88,47 +91,48 @@ class Plugin {
      *
      * @return void
      */
-    public function add_actions_and_filters() {
-        add_action( 'deactivate_plugin', [ $this, 'on_deactivation' ] );
-        add_action( 'admin_init', [ $this, 'maybe_update_dropin' ] );
-        add_action( 'admin_init', [ $this, 'maybe_redirect' ] );
-        add_action( 'init', [ $this, 'init' ] );
+    public function add_actions_and_filters()
+    {
+        add_action('deactivate_plugin', [$this, 'on_deactivation']);
+        add_action('admin_init', [$this, 'maybe_update_dropin']);
+        add_action('admin_init', [$this, 'maybe_redirect']);
+        add_action('init', [$this, 'init']);
 
-        add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', [ $this, 'add_admin_menu_page' ] );
+        add_action(is_multisite() ? 'network_admin_menu' : 'admin_menu', [$this, 'add_admin_menu_page']);
 
-        add_action( 'admin_notices', [ $this, 'show_admin_notices' ] );
-        add_action( 'network_admin_notices', [ $this, 'show_admin_notices' ] );
+        add_action('admin_notices', [$this, 'show_admin_notices']);
+        add_action('network_admin_notices', [$this, 'show_admin_notices']);
 
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_styles' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_redis_cache_data' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_redis_metrics' ] );
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_styles']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_redis_cache_data']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_redis_metrics']);
 
-        add_action( 'admin_bar_menu', [ $this, 'render_admin_bar' ], 998 );
+        add_action('admin_bar_menu', [$this, 'render_admin_bar'], 998);
 
-        add_action( 'load-settings_page_redis-cache', [ $this, 'do_admin_actions' ] );
+        add_action('load-settings_page_redis-cache', [$this, 'do_admin_actions']);
 
-        add_action( 'wp_dashboard_setup', [ $this, 'setup_dashboard_widget' ] );
-        add_action( 'wp_network_dashboard_setup', [ $this, 'setup_dashboard_widget' ] );
+        add_action('wp_dashboard_setup', [$this, 'setup_dashboard_widget']);
+        add_action('wp_network_dashboard_setup', [$this, 'setup_dashboard_widget']);
 
-        add_action( 'wp_ajax_roc_dismiss_notice', [ $this, 'ajax_dismiss_notice' ] );
-        add_action( 'wp_ajax_roc_flush_cache', [ $this, 'ajax_flush_cache' ] );
+        add_action('wp_ajax_roc_dismiss_notice', [$this, 'ajax_dismiss_notice']);
+        add_action('wp_ajax_roc_flush_cache', [$this, 'ajax_flush_cache']);
 
-        add_filter( 'gettext_redis-cache', [ $this, 'get_text' ], 10, 2 );
+        add_filter('gettext_redis-cache', [$this, 'get_text'], 10, 2);
 
-        add_filter( 'plugin_row_meta', [ $this, 'add_plugin_row_meta' ], 10, 2 );
-        add_filter( sprintf( '%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', WP_REDIS_BASENAME ), [ $this, 'add_plugin_actions_links' ] );
+        add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
+        add_filter(sprintf('%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', WP_REDIS_BASENAME), [$this, 'add_plugin_actions_links']);
 
-        add_action( 'wp_head', [ $this, 'register_shutdown_hooks' ] );
+        add_action('wp_head', [$this, 'register_shutdown_hooks']);
 
-        add_action( 'redis_object_cache_enable', [ $this, 'maybe_delete_transients' ] );
+        add_action('redis_object_cache_enable', [$this, 'maybe_delete_transients']);
 
-        add_filter( 'qm/collectors', [ $this, 'register_qm_collector' ], 25 );
-        add_filter( 'qm/outputter/html', [ $this, 'register_qm_output' ] );
+        add_filter('qm/collectors', [$this, 'register_qm_collector'], 25);
+        add_filter('qm/outputter/html', [$this, 'register_qm_output']);
 
-        add_filter( 'perflab_disable_object_cache_dropin', '__return_true' );
-        add_filter( 'w3tc_config_item_objectcache.enabled', '__return_false' );
-        add_action( 'litespeed_init', [ $this, 'litespeed_disable_objectcache' ] );
+        add_filter('perflab_disable_object_cache_dropin', '__return_true');
+        add_filter('w3tc_config_item_objectcache.enabled', '__return_false');
+        add_action('litespeed_init', [$this, 'litespeed_disable_objectcache']);
     }
 
     /**
@@ -136,9 +140,10 @@ class Plugin {
      *
      * @return void
      */
-    public function init() {
-        if ( is_admin() && ! wp_next_scheduled( 'rediscache_discard_metrics' ) ) {
-            wp_schedule_event( time(), 'hourly', 'rediscache_discard_metrics' );
+    public function init()
+    {
+        if (is_admin() && !wp_next_scheduled('rediscache_discard_metrics')) {
+            wp_schedule_event(time(), 'hourly', 'rediscache_discard_metrics');
         }
     }
 
@@ -147,14 +152,15 @@ class Plugin {
      *
      * @return void
      */
-    public function add_admin_menu_page() {
+    public function add_admin_menu_page()
+    {
         add_submenu_page(
             is_multisite() ? 'settings.php' : 'options-general.php',
-            __( 'Redis Object Cache', 'redis-cache' ),
-            __( 'Redis', 'redis-cache' ),
+            __('Redis Object Cache', 'redis-cache'),
+            __('Redis', 'redis-cache'),
             $this->manage_redis_capability(),
             'redis-cache',
-            [ $this, 'show_admin_page' ]
+            [$this, 'show_admin_page']
         );
     }
 
@@ -163,26 +169,27 @@ class Plugin {
      *
      * @return void
      */
-    public function show_admin_page() {
+    public function show_admin_page()
+    {
         // Request filesystem credentials?
-        if ( isset( $_GET['_wpnonce'], $_GET['action'] ) ) {
-            $action = sanitize_key( $_GET['action'] );
-            $nonce = sanitize_key( $_GET['_wpnonce'] );
+        if (isset($_GET['_wpnonce'], $_GET['action'])) {
+            $action = sanitize_key($_GET['action']);
+            $nonce = sanitize_key($_GET['_wpnonce']);
 
-            foreach ( $this->actions as $name ) {
+            foreach ($this->actions as $name) {
                 // Nonce verification.
-                if ( $action === $name && wp_verify_nonce( $nonce, $action ) ) {
-                    $url = $this->action_link( $action );
+                if ($action === $name && wp_verify_nonce($nonce, $action)) {
+                    $url = $this->action_link($action);
 
-                    if ( $this->initialize_filesystem( $url ) === false ) {
+                    if ($this->initialize_filesystem($url) === false) {
                         return; // Request filesystem credentials.
                     }
                 }
             }
         }
 
-        if ( wp_next_scheduled( 'redis_gather_metrics' ) ) {
-            wp_clear_scheduled_hook( 'redis_gather_metrics' );
+        if (wp_next_scheduled('redis_gather_metrics')) {
+            wp_clear_scheduled_hook('redis_gather_metrics');
         }
 
         echo '<div class="wrap" id="redis-cache"></div>';
@@ -193,19 +200,20 @@ class Plugin {
      *
      * @return void
      */
-    public function setup_dashboard_widget() {
-        if ( ! $this->current_user_can_manage_redis() ) {
+    public function setup_dashboard_widget()
+    {
+        if (!$this->current_user_can_manage_redis()) {
             return;
         }
 
-        if ( ! Metrics::is_enabled() ) {
+        if (!Metrics::is_enabled()) {
             return;
         }
 
         wp_add_dashboard_widget(
             'dashboard_rediscache',
-            __( 'Redis Object Cache', 'redis-cache' ),
-            [ $this, 'show_dashboard_widget' ],
+            __('Redis Object Cache', 'redis-cache'),
+            [$this, 'show_dashboard_widget'],
             null,
             null,
             'normal',
@@ -218,7 +226,8 @@ class Plugin {
      *
      * @return void
      */
-    public function show_dashboard_widget() {
+    public function show_dashboard_widget()
+    {
         require_once WP_REDIS_PLUGIN_PATH . '/includes/ui/widget.php';
     }
 
@@ -228,14 +237,15 @@ class Plugin {
      * @param string[] $links The current plugin action links.
      * @return string[]
      */
-    public function add_plugin_actions_links( $links ) {
+    public function add_plugin_actions_links($links)
+    {
         $settings = sprintf(
             '<a href="%s">%s</a>',
-            network_admin_url( $this->page ),
-            esc_html__( 'Settings', 'redis-cache' )
+            network_admin_url($this->page),
+            esc_html__('Settings', 'redis-cache')
         );
 
-        return array_merge( [ $settings ], $links );
+        return array_merge([$settings], $links);
     }
 
     /**
@@ -245,9 +255,10 @@ class Plugin {
      * @param string $text Text to translate.
      * @return string
      */
-    public function get_text( $translation, $text ) {
-        if ( $text === 'https://objectcache.pro' ) {
-            return $this->link_to_ocp( 'author', false );
+    public function get_text($translation, $text)
+    {
+        if ($text === 'https://objectcache.pro') {
+            return $this->link_to_ocp('author', false);
         }
 
         return $translation;
@@ -257,11 +268,12 @@ class Plugin {
      * Adds plugin meta links on the plugin page
      *
      * @param string[] $plugin_meta An array of the plugin's metadata.
-     * @param string   $plugin_file Path to the plugin file relative to the plugins directory.
+     * @param string $plugin_file Path to the plugin file relative to the plugins directory.
      * @return string[] An array of the plugin's metadata.
      */
-    public function add_plugin_row_meta( array $plugin_meta, $plugin_file ) {
-        if ( strpos( $plugin_file, 'redis-cache.php' ) === false ) {
+    public function add_plugin_row_meta(array $plugin_meta, $plugin_file)
+    {
+        if (strpos($plugin_file, 'redis-cache.php') === false) {
             return $plugin_meta;
         }
 
@@ -285,7 +297,7 @@ class Plugin {
      * @param bool $as_html
      * @return string
      */
-    public function link_to_ocp($medium, $as_html = true){
+    public function link_to_ocp($medium, $as_html = true) {
         $ref = 'oss';
 
         if ( self::acceleratewp_install( true ) ) {
@@ -418,56 +430,69 @@ class Plugin {
         wp_add_inline_script(
             'redis-cache-data',
             'window.rediscache = ' . wp_json_encode(
-                [
-                    'jQuery' => 'jQuery',
-                    'isPhp7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
-                    'isWp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
-                    'isPhpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
-                    'isPhpredisInstalled' => (bool) phpversion( 'redis' ),
-                    'isRelayInstalled' => (bool) phpversion( 'relay' ),
-                    'metrics' => [
-                        'minTime' => $screen->id === $this->screen
-                            ? Metrics::max_time()
-                            : MINUTE_IN_SECONDS * 30,
-                    ],
-                    'chartColor' => (
-                        defined( 'WP_REDIS_CHART_COLOR' )
-                        && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
-                    ) ? WP_REDIS_CHART_COLOR : null,
-                    'disableProBanner' => $screen->id !== $this->screen
-                        || ( defined( 'WP_REDIS_DISABLE_BANNERS' ) && WP_REDIS_DISABLE_BANNERS )
-                        || self::acceleratewp_install(),
-                    'l10n' => [
-                        'time' => __( 'Time', 'redis-cache' ),
-                        'bytes' => __( 'Bytes', 'redis-cache' ),
-                        'ratio' => __( 'Ratio', 'redis-cache' ),
-                        'calls' => __( 'Calls', 'redis-cache' ),
-                        'no_data' => __( 'Not enough data collected, yet.', 'redis-cache' ),
-                        'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
-                        'pro' => 'Object Cache Pro',
-                    ],
-                    'isRedisDisabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
-                    'isCacheDropinValid' => $this->validate_object_cache_dropin(),
-                    'links' => [
-                        'objectCachePro' => $this->link_to_ocp( 'settings' ),
-                    ],
-                    'connection' => [
-                        'status' => $this->get_redis_status(),
-                        'getStatus' => $this->get_status(),
-                        'clientName' => $this->get_redis_client_name(),
-                        'prefix' => $this->get_redis_prefix(), // check later.
-                        'maxTtl' => $this->get_redis_maxttl(),
-                        'version' => $this->get_redis_version(),
-                        'connection' => $this->check_redis_connection(),
-                        'filesystemAllowed' => $this->is_file_mod_allowed(),
-                        'filesystemWritable' => $this->test_filesystem_writing(),
-                        'diagnostics' => $this->get_diagnostics(),
-                    ],
-                ],
+                array_merge(
+                    $this->get_data(),
+                    [
+                        'metrics' => [
+                            'minTime' => $screen->id === $this->screen
+                                ? Metrics::max_time()
+                                : MINUTE_IN_SECONDS * 30,
+                        ],
+                        'disableProBanner' => $screen->id !== $this->screen
+                            || ( defined( 'WP_REDIS_DISABLE_BANNERS' ) && WP_REDIS_DISABLE_BANNERS )
+                            || self::acceleratewp_install(),
+                    ]
+                ),
                 JSON_HEX_TAG
             ) . ';',
             'before'
         );
+    }
+
+    /**
+     * Return the setting data for the plugin.
+     *
+     * @return array
+     */
+    public function get_data() {
+        return [
+            'jQuery' => 'jQuery',
+            'isPhp7' => (bool) version_compare( phpversion(), '7.2', '>=' ),
+            'isWp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
+            'isPhpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
+            'isPhpredisInstalled' => (bool) phpversion( 'redis' ),
+            'isRelayInstalled' => (bool) phpversion( 'relay' ),
+            'chartColor' => (
+                defined( 'WP_REDIS_CHART_COLOR' )
+                && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
+            ) ? WP_REDIS_CHART_COLOR : null,
+            'l10n' => [
+                'time' => __( 'Time', 'redis-cache' ),
+                'bytes' => __( 'Bytes', 'redis-cache' ),
+                'ratio' => __( 'Ratio', 'redis-cache' ),
+                'calls' => __( 'Calls', 'redis-cache' ),
+                'no_data' => __( 'Not enough data collected, yet.', 'redis-cache' ),
+                'no_cache' => __( 'Enable object cache to collect data.', 'redis-cache' ),
+                'pro' => 'Object Cache Pro',
+            ],
+            'isRedisDisabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
+            'isCacheDropinValid' => $this->validate_object_cache_dropin(),
+            'links' => [
+                'objectCachePro' => $this->link_to_ocp( 'settings' ),
+            ],
+            'connection' => [
+                'status' => $this->get_redis_status(),
+                'getStatus' => $this->get_status(),
+                'clientName' => $this->get_redis_client_name(),
+                'prefix' => $this->get_redis_prefix(), // check later.
+                'maxTtl' => $this->get_redis_maxttl(),
+                'version' => $this->get_redis_version(),
+                'connection' => $this->check_redis_connection(),
+                'filesystemAllowed' => $this->is_file_mod_allowed(),
+                'filesystemWritable' => $this->test_filesystem_writing(),
+                'diagnostics' => $this->get_diagnostics(),
+            ],
+        ];
     }
 
     /**
@@ -1366,7 +1391,7 @@ HTML;
             return;
         }
 
-        if ($this->incompatible_content_type()) {
+        if ( $this->incompatible_content_type() ) {
             return;
         }
 
@@ -1421,22 +1446,22 @@ HTML;
             return false;
         };
 
-        if (function_exists('headers_list')) {
+        if ( function_exists( 'headers_list' ) ) {
             $headers = [];
 
-            foreach (headers_list() as $header) {
-                [$name, $value] = explode(':', $header);
-                $headers[$name] = $value;
+            foreach ( headers_list() as $header ) {
+                [$name, $value] = explode( ':', $header );
+                $headers[ $name ] = $value;
             }
 
-            if ($jsonContentType($headers)) {
+            if ( $jsonContentType( $headers ) ) {
                 return true;
             }
         }
 
-        if (function_exists('apache_response_headers')) {
-            if ($headers = apache_response_headers()) {
-                return $jsonContentType($headers);
+        if ( function_exists( 'apache_response_headers' ) ) {
+            if ( $headers = apache_response_headers() ) {
+                return $jsonContentType( $headers );
             }
         }
 
@@ -1651,7 +1676,7 @@ HTML;
                 wp_unschedule_event( $timestamp, 'rediscache_discard_metrics' );
             }
 
-            (new Predis)->flush();
+            ( new Predis() )->flush();
 
             if ( $this->validate_object_cache_dropin() && $this->initialize_filesystem( '', true ) ) {
                 $wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
