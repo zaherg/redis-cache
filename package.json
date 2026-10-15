@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@wordpress/api-fetch": "^7.56.0",
@@ -59,6 +60,7 @@
     "@wordpress/scripts": "^36.1.0",
     "@wordpress/ui": "^0.24.0",
     "postcss-nesting": "^14.0.1",
+    "purgecss-with-wordpress": "^8.0.0",
     "webpack-manifest-plugin": "^6.0.1"
   }
 }

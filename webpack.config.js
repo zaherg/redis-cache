@@ -1,12 +1,30 @@
 import { basename, dirname, posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import purgeCss from '@fullhuman/postcss-purgecss';
 import defaultConfig from '@wordpress/scripts/config/webpack.config.js';
 import postcssNesting from 'postcss-nesting';
+import purgecssWordpress from 'purgecss-with-wordpress';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 const __file = fileURLToPath( import.meta.url );
 const __dir = dirname( __file );
+
+const purgeOptions = {
+    content: [
+        resolve( __dir, 'frontend/**/*.{js,jsx,ts,tsx}' ),
+        resolve( __dir, 'includes/ui/**/*.php' ),
+        resolve( __dir, 'assets/js/admin.js' ),
+    ],
+    safelist: {
+        standard: [ ...purgecssWordpress.safelist, 'inside', 'active', /^components-/, /^apexcharts-/ ],
+    },
+    keyframes: false,
+    variables: false,
+    fontFace: false,
+};
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
     ...defaultConfig,
@@ -34,7 +52,14 @@ export default {
                                 // WordPress leaves CSS nesting intact; flatten it for browsers without native support.
                                 // Run after imports, before prefixing and minification.
                                 plugins: postcssOptions.plugins.flatMap( ( plugin ) =>
-                                    plugin.postcssPlugin === 'autoprefixer' ? [ postcssNesting(), plugin ] : [ plugin ],
+                                    // When reaching Autoprefixer, insert the additional plugins immediately before it.
+                                    plugin.postcssPlugin === 'autoprefixer'
+                                        ? [
+                                              postcssNesting(),
+                                              ...( isProduction ? [ purgeCss( purgeOptions ) ] : [] ),
+                                              plugin,
+                                          ]
+                                        : [ plugin ],
                                 ),
                             },
                         },
@@ -60,7 +85,6 @@ export default {
         ...defaultConfig.plugins,
         new WebpackManifestPlugin( {
             fileName: '../manifest.json',
-            publicPath: 'dist/',
             generate( seed, files, entrypoints ) {
                 const assets = files.reduce(
                     ( assets, file ) => {
@@ -95,6 +119,7 @@ export default {
                     ),
                 };
             },
+            publicPath: 'dist/',
         } ),
     ],
     optimization: {
