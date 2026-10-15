@@ -294,7 +294,7 @@ class Plugin {
 
         $url = "https://objectcache.pro/?ref={$ref}&utm_source=wp-plugin&utm_medium={$medium}";
 
-        return $as_html ? str_replace('&', '&amp;', $url) : $url;
+        return $as_html ? str_replace( '&', '&amp;', $url ) : $url;
     }
 
     /**
@@ -323,7 +323,7 @@ class Plugin {
 
         wp_enqueue_style(
             'redis-cache',
-            plugins_url( 'public/dist/' . (is_rtl() ? 'settings-rtl.css' : 'settings.css'), WP_REDIS_FILE ),
+            plugins_url( 'public/dist/' . ( is_rtl() ? 'settings-rtl.css' : 'settings.css' ), WP_REDIS_FILE ),
             [],
             $assets['version']
         );
@@ -353,17 +353,18 @@ class Plugin {
         if ( ! in_array( $screen->id, $screens, true ) ) {
             return;
         }
-        $manifest = wp_json_file_decode(WP_REDIS_PLUGIN_PATH . '/public/manifest.json', [
-            "associative" => true
-        ]);
-        if($manifest === null) {
+        $manifest = wp_json_file_decode(
+            WP_REDIS_PLUGIN_PATH . '/public/manifest.json',
+            [ 'associative' => true ]
+        );
+        if ( $manifest === null ) {
             return;
         }
         $clipboard = file_exists( ABSPATH . WPINC . '/js/clipboard.min.js' );
 
-        foreach($manifest['entrypoints']['settings']['scripts'] as $item) {
-            $handle = str_replace('.js', '', $item);
-            $asset_file = include WP_REDIS_PLUGIN_PATH . '/public/dist/'. $handle .'.asset.php';
+        foreach ( $manifest['entrypoints']['settings']['scripts'] as $item ) {
+            $handle = str_replace( '.js', '', $item );
+            $asset_file = include WP_REDIS_PLUGIN_PATH . '/public/dist/' . $handle . '.asset.php';
 
             wp_enqueue_script(
                 'redis-cache-' . $handle,
@@ -410,8 +411,9 @@ class Plugin {
             return;
         }
 
-
+        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Inline-only handle; no script URL to version.
         wp_register_script( 'redis-cache-data', false, [], null, true );
+
         wp_enqueue_script( 'redis-cache-data' );
         wp_add_inline_script(
             'redis-cache-data',
@@ -426,7 +428,7 @@ class Plugin {
                     'metrics' => [
                         'minTime' => $screen->id === $this->screen
                             ? Metrics::max_time()
-                            : MINUTE_IN_SECONDS * 30
+                            : MINUTE_IN_SECONDS * 30,
                     ],
                     'chartColor' => (
                         defined( 'WP_REDIS_CHART_COLOR' )
@@ -448,22 +450,19 @@ class Plugin {
                     'isCacheDropinValid' => $this->validate_object_cache_dropin(),
                     'links' => [
                         'objectCachePro' => $this->link_to_ocp( 'settings' ),
-                        'enableCache' => $this->action_link('enable-cache'),
-                        'disableCache' => $this->action_link('disable-cache'),
-                        'flushCache' => $this->action_link('flush-cache'),
                     ],
                     'connection' => [
                         'status' => $this->get_redis_status(),
                         'getStatus' => $this->get_status(),
                         'clientName' => $this->get_redis_client_name(),
-                        'prefix' => $this->get_redis_prefix(), // check
+                        'prefix' => $this->get_redis_prefix(), // check later.
                         'maxTtl' => $this->get_redis_maxttl(),
                         'version' => $this->get_redis_version(),
                         'connection' => $this->check_redis_connection(),
                         'filesystemAllowed' => $this->is_file_mod_allowed(),
                         'filesystemWritable' => $this->test_filesystem_writing(),
                         'diagnostics' => $this->get_diagnostics(),
-                    ]
+                    ],
                 ],
                 JSON_HEX_TAG
             ) . ';',
