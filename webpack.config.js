@@ -43,24 +43,24 @@ export default {
                         return loader;
                     }
 
+                    const plugins = [ ...postcssOptions.plugins ];
+                    const importIndex = plugins.findIndex( ( plugin ) => plugin.postcssPlugin === 'postcss-import' );
+
+                    // Flatten nesting and purge after imports, or first if no import plugin is configured.
+                    plugins.splice(
+                        importIndex + 1,
+                        0,
+                        postcssNesting(),
+                        ...( isProduction ? [ purgeCss( purgeOptions ) ] : [] ),
+                    );
+
                     return {
                         ...loader,
                         options: {
                             ...loader.options,
                             postcssOptions: {
                                 ...postcssOptions,
-                                // WordPress leaves CSS nesting intact; flatten it for browsers without native support.
-                                // Run after imports, before prefixing and minification.
-                                plugins: postcssOptions.plugins.flatMap( ( plugin ) =>
-                                    // When reaching Autoprefixer, insert the additional plugins immediately before it.
-                                    plugin.postcssPlugin === 'autoprefixer'
-                                        ? [
-                                              postcssNesting(),
-                                              ...( isProduction ? [ purgeCss( purgeOptions ) ] : [] ),
-                                              plugin,
-                                          ]
-                                        : [ plugin ],
-                                ),
+                                plugins,
                             },
                         },
                     };
