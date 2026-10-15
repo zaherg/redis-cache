@@ -9,6 +9,9 @@ namespace Rhubarb\RedisCache;
 
 defined( 'ABSPATH' ) || exit;
 
+use WP_REST_Response;
+use WP_REST_Request;
+
 /**
  *  REST Endpoints class
  */
@@ -33,6 +36,7 @@ class Rest_Endpoints {
             'enable-cache'  => [ 'POST', 'enable_object_cache' ],
             'flush-cache'   => [ 'POST', 'flush_cache' ],
             'update-dropin'   => [ 'POST', 'update_dropin' ],
+            'get-data'   => [ 'GET', 'get_data' ],
             'metrics'   => [
                 'GET',
                 'get_metrics',
@@ -65,7 +69,7 @@ class Rest_Endpoints {
     /**
      * Delete the object cache drop-in and flush Redis if deletion succeeds.
      *
-     * @return \WP_REST_Response
+     * @return WP_REST_Response
      */
     public function disable_object_cache() {
         require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -76,7 +80,7 @@ class Rest_Endpoints {
 
         // do we have filesystem credentials?
         if ( ! $plugin->initialize_filesystem( $url, true ) ) {
-            return new \WP_REST_Response( null, 500 );
+            return new WP_REST_Response( null, 500 );
         }
 
         $result = $wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
@@ -103,13 +107,13 @@ class Rest_Endpoints {
                 __( 'Object cache could not be disabled.', 'redis-cache' ),
             ];
 
-        return new \WP_REST_Response( $data, $result ? 200 : 500 );
+        return new WP_REST_Response( $data, $result ? 200 : 500 );
     }
 
     /**
      * Install the object cache drop-in and flush Redis if installation succeeds.
      *
-     * @return \WP_REST_Response
+     * @return WP_REST_Response
      */
     public function enable_object_cache() {
         require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -120,7 +124,7 @@ class Rest_Endpoints {
 
         // do we have filesystem credentials?
         if ( ! $plugin->initialize_filesystem( $url, true ) ) {
-            return new \WP_REST_Response( null, 500 );
+            return new WP_REST_Response( null, 500 );
         }
 
         $result = $wp_filesystem->copy(
@@ -151,13 +155,13 @@ class Rest_Endpoints {
                 __( 'Object cache could not be enabled.', 'redis-cache' ),
             ];
 
-        return new \WP_REST_Response( $data, $result ? 200 : 500 );
+        return new WP_REST_Response( $data, $result ? 200 : 500 );
     }
 
     /**
      * Flush the object cache and return the result.
      *
-     * @return \WP_REST_Response
+     * @return WP_REST_Response
      */
     public function flush_cache() {
         $data = wp_cache_flush()
@@ -170,7 +174,7 @@ class Rest_Endpoints {
                 'message' => __( 'Object cache could not be flushed.', 'redis-cache' ),
             ];
 
-        return new \WP_REST_Response(
+        return new WP_REST_Response(
             $data,
             $data['type'] === 'success' ? 200 : 500
         );
@@ -179,7 +183,7 @@ class Rest_Endpoints {
     /**
      * Replace the object cache drop-in with the bundled version without flushing Redis.
      *
-     * @return \WP_REST_Response
+     * @return WP_REST_Response
      */
     public function update_dropin() {
         global $wp_filesystem;
@@ -187,7 +191,7 @@ class Rest_Endpoints {
 
         // do we have filesystem credentials?
         if ( ! Plugin::instance()->initialize_filesystem( $url, true ) ) {
-            return new \WP_REST_Response( null, 500 );
+            return new WP_REST_Response( null, 500 );
         }
 
         $result = $wp_filesystem->copy(
@@ -215,18 +219,32 @@ class Rest_Endpoints {
                 __( 'Object cache drop-in could not be updated.', 'redis-cache' ),
             ];
 
-        return new \WP_REST_Response( $data, $result ? 200 : 500 );
+        return new WP_REST_Response( $data, $result ? 200 : 500 );
+    }
+
+    /**
+     * Replace the object cache drop-in with the bundled version without flushing Redis.
+     *
+     * @return WP_REST_Response
+     */
+    public function get_data() {
+        return new WP_REST_Response(
+            [
+                'config' => 'yes',
+            ],
+            200
+        );
     }
 
     /**
      * Retrieves recorded metrics for the requested time window.
      *
-     * @param \WP_REST_Request $request Request with an optional minTime parameter in seconds. Defaults to 1800 (30 minutes).
-     * @return \WP_REST_Response Response containing the recorded metrics.
+     * @param WP_REST_Request $request Request with an optional minTime parameter in seconds. Defaults to 1800 (30 minutes).
+     * @return WP_REST_Response Response containing the recorded metrics.
      */
-    public function get_metrics( \WP_REST_Request $request ) {
+    public function get_metrics(WP_REST_Request $request ) {
         if ( ! Metrics::is_enabled() ) {
-            return new \WP_REST_Response(
+            return new WP_REST_Response(
                 [
                     'type' => 'error',
                     'message' => __( 'Metrics are not enabled', 'redis-cache' ),
@@ -236,7 +254,7 @@ class Rest_Endpoints {
         }
 
         if ( ! Plugin::instance()->get_redis_status() ) {
-            return new \WP_REST_Response(
+            return new WP_REST_Response(
                 [
                     'type' => 'error',
                     'message' => __( 'Redis is not available.', 'redis-cache' ),
@@ -248,6 +266,6 @@ class Rest_Endpoints {
         $min_time = $request->get_param( 'minTime' ) ?? MINUTE_IN_SECONDS * 30;
         $metrics = Metrics::get( $min_time );
 
-        return new \WP_REST_Response( compact( 'metrics' ), 200 );
+        return new WP_REST_Response( compact( 'metrics' ), 200 );
     }
 }

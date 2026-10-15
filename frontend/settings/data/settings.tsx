@@ -3,7 +3,7 @@ import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
 import type { RedisCache } from '@redis-cache/types/rediscache';
 
-interface SettingsContextValue {
+export interface SettingsContextValue {
     settings: RedisCache;
     setSettings: Dispatch< SetStateAction< RedisCache > >;
 }

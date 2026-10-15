@@ -1,21 +1,20 @@
 import { Button } from '@wordpress/components';
-import { createInterpolateElement, useContext, useState } from '@wordpress/element';
+import { createInterpolateElement, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
 
 import { disable, enable, flush } from '@redis-cache/api/cache';
+import { getData } from '@redis-cache/api/data';
 import type { MessageResponse } from '@redis-cache/api/types';
 import { Notification } from '@redis-cache/settings/components/notification';
-import { SettingsContext } from '@redis-cache/settings/data/settings';
+import { useSettings } from '@redis-cache/settings/hooks/use-settings';
 import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
 
 export const Status = () => {
     const [ notifications, setNotifications ] = useState< MessageResponse | undefined >();
-    const { settings } = useContext( SettingsContext );
+    const { settings } = useSettings();
     const { status, getStatus, filesystemAllowed, filesystemWritable } = settings?.connection || {};
-
-    console.log( settings.connection );
 
     const fileSystemLabel =
         filesystemWritable === true
@@ -75,10 +74,23 @@ const ActionButtons = ( {
 }: {
     setNotifications: ( value: MessageResponse | undefined ) => void;
 } ) => {
-    const { settings } = useContext( SettingsContext );
-    const flushCache = async () => setNotifications( await flush() );
-    const enableCache = async () => setNotifications( await enable() );
-    const disableCache = async () => setNotifications( await disable() );
+    const { settings, setSettings } = useSettings();
+    const refreshData = () => getData( setSettings );
+
+    const flushCache = async () => {
+        setNotifications( await flush() );
+        await refreshData();
+    };
+
+    const enableCache = async () => {
+        setNotifications( await enable() );
+        await refreshData();
+    };
+
+    const disableCache = async () => {
+        setNotifications( await disable() );
+        await refreshData();
+    };
 
     return (
         <div className="status-card__action-buttons">
