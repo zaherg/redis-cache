@@ -186,7 +186,9 @@ class Rest_Endpoints {
      * @return WP_REST_Response
      */
     public function update_dropin() {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         global $wp_filesystem;
+
         $url = Plugin::instance()->action_link( 'enable-cache' );
 
         // do we have filesystem credentials?
@@ -228,6 +230,8 @@ class Rest_Endpoints {
      * @return WP_REST_Response
      */
     public function get_data() {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+
         return new WP_REST_Response(
             Plugin::instance()->get_data(),
             200

@@ -116,7 +116,7 @@ const ActionButtons = ( {
                     { __( 'Disable Object Cache', 'redis-cache' ) }
                 </Button>
             ) }
-            { settings.connection.connection && settings.connection.filesystemWritable === true && (
+            { settings.connection.status === null && settings.connection.filesystemWritable === true && (
                 <Button
                     title={ __( 'Enable Object Cache', 'redis-cache' ) }
                     variant="secondary"
