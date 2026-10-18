@@ -20,6 +20,8 @@
     --redis-cache-font-size-lg: var(--wpds-typography-font-size-lg, 0.9375rem);
     --redis-cache-font-size-xl: var(--wpds-typography-font-size-xl, 1.25rem);
     --redis-cache-font-size-2xl: var(--wpds-typography-font-size-2xl, 2rem);
+
+    box-sizing: border-box;
 }
 
 #redis-cache * {
@@ -222,7 +224,7 @@
 }
 
 #redis-cache .sidebar-column h2.title {
-    margin: 0px;
+    margin: 0;
     line-height: 1.4;
     font-size: var(--redis-cache-font-size-2xl);
 }

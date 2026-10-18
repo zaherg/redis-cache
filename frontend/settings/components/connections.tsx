@@ -1,9 +1,12 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { Card } from '@wordpress/ui';
 
-const { connection } = window.rediscache ?? {};
+import { useSettings } from '@redis-cache/settings/hooks/use-settings';
 
 export const Connections = () => {
+    const { settings } = useSettings();
+    const { connection } = settings ?? {};
+
     if ( ! connection.status ) return;
 
     const diagnostics = connection.diagnostics;
