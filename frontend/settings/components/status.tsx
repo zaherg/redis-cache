@@ -1,5 +1,5 @@
 import { Button, Snackbar } from '@wordpress/components';
-import { createInterpolateElement, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __, isRTL, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
@@ -8,11 +8,14 @@ import { disable, enable, flush } from '@redis-cache/api/cache';
 import { getData } from '@redis-cache/api/data';
 import type { MessageResponse } from '@redis-cache/api/types';
 import { useSettings } from '@redis-cache/settings/hooks/use-settings';
-import { CheckFilled } from '@redis-cache/settings/icons/checkFilled';
+import { CheckCircle, PowerOff } from '@redis-cache/settings/icons';
+
+const { Root, Content } = Card;
 
 export const Status = () => {
     const { settings } = useSettings();
     const { status, getStatus, filesystemAllowed, filesystemWritable } = settings?.connection || {};
+    const isActive = ! ( typeof status === 'string' || status === null );
 
     const fileSystemLabel =
         filesystemWritable === true
@@ -22,26 +25,18 @@ export const Status = () => {
               : __( 'File System Not writeable', 'redis-cache' );
 
     return (
-        <Card.Root className="status-card">
-            <Card.Content className="status-card__content">
+        <Root className="status-card">
+            <Content className="status-card__content">
                 <div className="shrink-0">
-                    <Icon icon={ CheckFilled } size={ 48 } className="green" />
+                    <Icon
+                        icon={ isActive ? CheckCircle : PowerOff }
+                        size={ 40 }
+                        className={ isActive ? 'green' : 'red' }
+                    />
                 </div>
                 <div className="status-card__status">
-                    <div className="flex flex-col">
-                        <span className="font-xl">
-                            { createInterpolateElement(
-                                __( '<strong>Redis Object Cache is active</strong>', 'redis-cache' ),
-                                { strong: <strong /> },
-                            ) }
-                        </span>
-                    </div>
                     <div className="status-card__features-stats">
-                        <div
-                            className={
-                                typeof status === 'string' || status === null ? 'error-circle' : 'active-circle'
-                            }
-                        >
+                        <div className={ isActive ? 'active-circle' : 'error-circle' }>
                             { sprintf( __( 'Redis %s', 'redis-cache' ), getStatus ) }
                         </div>
                         <div className="active-circle">{ __( 'Drop-in valid', 'redis-cache' ) }</div>
@@ -51,8 +46,8 @@ export const Status = () => {
                     </div>
                 </div>
                 <ActionButtons />
-            </Card.Content>
-        </Card.Root>
+            </Content>
+        </Root>
     );
 };
 
@@ -72,9 +67,9 @@ const ActionButtons = () => {
                 { settings.connection.status && (
                     <Button
                         title={ __( 'Flush Cache', 'redis-cache' ) }
-                        variant="primary"
+                        variant="tertiary"
                         role="button"
-                        className="button-large"
+                        size="compact"
                         onClick={ () => runCacheAction( flush ) }
                     >
                         { __( 'Flush Cache', 'redis-cache' ) }
@@ -83,9 +78,10 @@ const ActionButtons = () => {
                 { settings.isCacheDropinValid && settings.connection.filesystemAllowed && (
                     <Button
                         title={ __( 'Disable Object Cache', 'redis-cache' ) }
-                        variant="secondary"
+                        isDestructive
+                        variant="tertiary"
                         role="button"
-                        className="button-large"
+                        size="compact"
                         onClick={ () => runCacheAction( disable ) }
                     >
                         { __( 'Disable Object Cache', 'redis-cache' ) }
@@ -94,9 +90,9 @@ const ActionButtons = () => {
                 { settings.connection.status === null && settings.connection.filesystemWritable === true && (
                     <Button
                         title={ __( 'Enable Object Cache', 'redis-cache' ) }
-                        variant="secondary"
+                        variant="tertiary"
                         role="button"
-                        className="button-large"
+                        size="compact"
                         onClick={ () => runCacheAction( enable ) }
                     >
                         { __( 'Enable Object Cache', 'redis-cache' ) }

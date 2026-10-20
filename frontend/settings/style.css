@@ -493,6 +493,10 @@
     background-color: var(--redis-cache-red);
 }
 
+#redis-cache .red {
+    color: var(--redis-cache-red);
+}
+
 #redis-cache .flex,
 #redis-cache .inline-flex {
     display: flex;
