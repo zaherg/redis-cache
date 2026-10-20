@@ -18,18 +18,14 @@ export const Dashboard = () => (
                 { isRedisDisabled && (
                     <Notification
                         type={ 'error' }
-                        message={
-                            createInterpolateElement(
-                                sprintf(
-                                    // translators: %s = the WP_REDIS_DISABLED config constant, wrapped in a <code> tag.
-                                    __( 'The object cache is disabled because the %s constant is set.', 'redis-cache' ),
-                                    '<code>WP_REDIS_DISABLED</code>',
-                                ),
-                                {
-                                    code: <code />,
-                                },
-                            ) as unknown as string
-                        }
+                        message={ createInterpolateElement(
+                            sprintf(
+                                // translators: %s = the WP_REDIS_DISABLED config constant, wrapped in a <code> tag.
+                                __( 'The object cache is disabled because the %s constant is set.', 'redis-cache' ),
+                                '<code>WP_REDIS_DISABLED</code>',
+                            ),
+                            { code: <code /> },
+                        ) }
                     />
                 ) }
                 <SettingsContextProvider>

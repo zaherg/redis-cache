@@ -1,9 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { Notice } from '@wordpress/ui';
+import type { ReactNode } from 'react';
 
-interface NotificationProbs {
+interface NotificationProps {
     type: 'success' | 'error' | 'warning';
-    message: string;
+    message: ReactNode;
     hideTitle?: boolean;
     hideCloseButton?: boolean;
     onClose?: () => void;
@@ -19,7 +20,7 @@ export const Notification = ( {
     hideCloseButton = true,
     onClose,
     className = '',
-}: NotificationProbs ) => (
+}: NotificationProps ) => (
     <Root intent={ type } className={ className }>
         { ! hideTitle && <Title>{ __( 'Notice', 'redis-cache' ) }</Title> }
         <Description>{ message }</Description>
