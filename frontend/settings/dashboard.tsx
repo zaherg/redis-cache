@@ -37,7 +37,7 @@ export const Dashboard = () => (
                         <Status />
                     </section>
                     <section className="metrics">
-                        <Metrics isLoading={ true } />
+                        <Metrics />
                     </section>
                     <section className="connections">
                         <Connections />
