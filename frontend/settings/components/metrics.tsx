@@ -45,7 +45,7 @@ export const Metrics = () => {
                 ) : (
                     <div className="metrics-card__empty">
                         { <MetricsInactive /> }
-                        <h3>{ __( 'No chart data available', 'redis-cache' ) }</h3>
+                        <h3>{ __( 'No data available', 'redis-cache' ) }</h3>
                         <p>{ __( 'Enable object cache to collect data.', 'redis-cache' ) }</p>
                         <p className="metrics-card__hint">
                             { __( 'Activity will appear after requests have been recorded.', 'redis-cache' ) }

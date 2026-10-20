@@ -37,6 +37,7 @@ export interface RedisCache {
     disableProBanner: boolean;
     l10n: Record< string, string >;
     isCacheDropinValid: boolean;
+    isDropinOutdated: boolean;
     links: {
         objectCachePro: string;
     };

@@ -462,6 +462,7 @@ class Plugin
             'isPhpredis311' => version_compare( phpversion( 'redis' ), '3.1.1', '>=' ),
             'isPhpredisInstalled' => (bool) phpversion( 'redis' ),
             'isRelayInstalled' => (bool) phpversion( 'relay' ),
+            'isDropinOutdated' => $this->object_cache_dropin_outdated(),
             'chartColor' => (
                 defined( 'WP_REDIS_CHART_COLOR' )
                 && preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', (string) WP_REDIS_CHART_COLOR )
@@ -478,7 +479,7 @@ class Plugin
             'isRedisDisabled' => defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED,
             'isCacheDropinValid' => $this->validate_object_cache_dropin(),
             'links' => [
-                'objectCachePro' => $this->link_to_ocp( 'settings' ),
+                'objectCachePro' => $this->link_to_ocp('settings'),
             ],
             'connection' => [
                 'status' => $this->get_redis_status(),

@@ -24,6 +24,12 @@ export const Status = () => {
               ? __( 'File System Disabled', 'redis-cache' )
               : __( 'File System Not writeable', 'redis-cache' );
 
+    const dropinClassName = settings.isDropinOutdated
+        ? 'warning-circle'
+        : settings.isCacheDropinValid
+          ? 'active-circle'
+          : 'error-circle';
+
     return (
         <Root className="status-card">
             <Content className="status-card__content">
@@ -39,7 +45,13 @@ export const Status = () => {
                         <div className={ isActive ? 'active-circle' : 'error-circle' }>
                             { sprintf( __( 'Redis %s', 'redis-cache' ), getStatus ) }
                         </div>
-                        <div className="active-circle">{ __( 'Drop-in valid', 'redis-cache' ) }</div>
+                        <div className={ dropinClassName }>
+                            { settings.isDropinOutdated
+                                ? __( 'Drop-in outdated', 'redis-cache' )
+                                : settings.isCacheDropinValid
+                                  ? __( 'Drop-in valid', 'redis-cache' )
+                                  : __( 'Drop-in invalid', 'redis-cache' ) }
+                        </div>
                         <div className={ filesystemWritable === true ? 'active-circle' : 'error-circle' }>
                             { fileSystemLabel }
                         </div>

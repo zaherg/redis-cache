@@ -471,6 +471,7 @@
 }
 
 #redis-cache .active-circle,
+#redis-cache .warning-circle,
 #redis-cache .error-circle {
     display: inline-flex;
     align-items: center;
@@ -478,6 +479,7 @@
 }
 
 #redis-cache .active-circle::before,
+#redis-cache .warning-circle::before,
 #redis-cache .error-circle::before {
     content: "";
     flex-shrink: 0;
@@ -491,6 +493,9 @@
 }
 #redis-cache .error-circle::before {
     background-color: var(--redis-cache-red);
+}
+#redis-cache .warning-circle::before {
+    background-color: var(--redis-cache-orange);
 }
 
 #redis-cache .red {
