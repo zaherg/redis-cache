@@ -8,8 +8,7 @@ const { Root, Title, Header, Content } = Card;
 
 export const Metrics = () => {
     const { settings } = useSettings();
-    const { status } = settings.connection;
-    const isActive = ! ( typeof status === 'string' || status === null );
+    const isActive = settings.connection?.status === true;
     return (
         <Root className="metrics-card">
             <Header className="metrics-card__header">

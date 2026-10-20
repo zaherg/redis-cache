@@ -15,7 +15,7 @@ const { Root, Content } = Card;
 export const Status = () => {
     const { settings } = useSettings();
     const { status, getStatus, filesystemAllowed, filesystemWritable } = settings?.connection || {};
-    const isActive = ! ( typeof status === 'string' || status === null );
+    const isActive = status === true;
 
     const fileSystemLabel =
         filesystemWritable === true
