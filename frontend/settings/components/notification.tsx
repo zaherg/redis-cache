@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 interface NotificationProps {
     type: 'success' | 'error' | 'warning';
-    message: ReactNode;
+    message: ReactNode | string;
     hideTitle?: boolean;
     hideCloseButton?: boolean;
     onClose?: () => void;
