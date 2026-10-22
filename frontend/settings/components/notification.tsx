@@ -1,3 +1,4 @@
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Notice } from '@wordpress/ui';
 import type { ReactNode } from 'react';
@@ -7,6 +8,8 @@ interface NotificationProps {
     message: ReactNode | string;
     hideTitle?: boolean;
     hideCloseButton?: boolean;
+    /** Delay in milliseconds, default 6s, disabled when omitted or the close button is visible. */
+    autoDismiss?: number;
     onClose?: () => void;
     className?: string;
 }
@@ -18,12 +21,25 @@ export const Notification = ( {
     message,
     hideTitle = true,
     hideCloseButton = true,
+    autoDismiss = 6000,
     onClose,
     className = '',
-}: NotificationProps ) => (
-    <Root intent={ type } className={ className }>
-        { ! hideTitle && <Title>{ __( 'Notice', 'redis-cache' ) }</Title> }
-        <Description>{ message }</Description>
-        { ! hideCloseButton && <CloseIconButton onClick={ onClose } /> }
-    </Root>
-);
+}: NotificationProps ) => {
+    useEffect( () => {
+        if ( ! hideCloseButton || ! onClose || ! Number.isFinite( autoDismiss ) || autoDismiss <= 0 ) {
+            return;
+        }
+
+        const timeout = window.setTimeout( onClose, autoDismiss );
+
+        return () => window.clearTimeout( timeout );
+    }, [ autoDismiss, hideCloseButton, message, onClose ] );
+
+    return (
+        <Root intent={ type } className={ `notification ${ className }` }>
+            { ! hideTitle && <Title>{ __( 'Notice', 'redis-cache' ) }</Title> }
+            <Description>{ message }</Description>
+            { ! hideCloseButton && <CloseIconButton onClick={ onClose } /> }
+        </Root>
+    );
+};

@@ -1,16 +1,28 @@
-import { Button, Snackbar } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import { __, isRTL, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Icon } from '@wordpress/icons';
 import { Card } from '@wordpress/ui';
 
 import { disable, enable, flush } from '@redis-cache/api/cache';
 import { getData } from '@redis-cache/api/data';
 import type { MessageResponse } from '@redis-cache/api/types';
+import { Notification } from '@redis-cache/settings/components/notification';
 import { useSettings } from '@redis-cache/settings/hooks/use-settings';
 import { CheckCircle, PowerOff } from '@redis-cache/settings/icons';
 
 const { Root, Content } = Card;
+
+const getErrorMessage = ( error: unknown ) => {
+    if ( typeof error === 'object' && error !== null && 'message' in error ) {
+        const { message } = error;
+        if ( typeof message === 'string' && message.trim() ) {
+            return message;
+        }
+    }
+
+    return __( 'An unknown error occurred.', 'redis-cache' );
+};
 
 export const Status = () => {
     const { settings } = useSettings();
@@ -64,13 +76,22 @@ export const Status = () => {
 };
 
 const ActionButtons = () => {
-    const [ notifications, setNotifications ] = useState< MessageResponse | undefined >();
+    const [ notification, setNotification ] = useState< MessageResponse | undefined >();
     const { settings, setSettings } = useSettings();
     const refreshData = () => getData( setSettings );
 
     const runCacheAction = async ( action: () => Promise< MessageResponse > ) => {
-        setNotifications( await action() );
-        await refreshData();
+        try {
+            const response: MessageResponse = await action();
+            setNotification( response );
+            await refreshData();
+        } catch ( error ) {
+            setNotification( {
+                type: 'error',
+                // translators: %s = request error message.
+                message: sprintf( __( 'Cache request failed: %s', 'redis-cache' ), getErrorMessage( error ) ),
+            } );
+        }
     };
 
     return (
@@ -80,7 +101,6 @@ const ActionButtons = () => {
                     <Button
                         title={ __( 'Flush Cache', 'redis-cache' ) }
                         variant="tertiary"
-                        role="button"
                         size="compact"
                         onClick={ () => runCacheAction( flush ) }
                     >
@@ -92,7 +112,6 @@ const ActionButtons = () => {
                         title={ __( 'Disable Object Cache', 'redis-cache' ) }
                         isDestructive
                         variant="tertiary"
-                        role="button"
                         size="compact"
                         onClick={ () => runCacheAction( disable ) }
                     >
@@ -103,7 +122,6 @@ const ActionButtons = () => {
                     <Button
                         title={ __( 'Enable Object Cache', 'redis-cache' ) }
                         variant="tertiary"
-                        role="button"
                         size="compact"
                         onClick={ () => runCacheAction( enable ) }
                     >
@@ -111,16 +129,13 @@ const ActionButtons = () => {
                     </Button>
                 ) }
             </div>
-            <div
-                style={ {
-                    position: 'absolute',
-                    top: '10px',
-                    right: isRTL() ? undefined : '20px',
-                    left: isRTL() ? '20px' : undefined,
-                } }
-            >
-                { notifications && (
-                    <Snackbar onRemove={ () => setNotifications( undefined ) }>{ notifications?.message }</Snackbar>
+            <div className="notifications-container">
+                { notification && (
+                    <Notification
+                        type={ notification.type }
+                        message={ notification.message }
+                        onClose={ () => setNotification( undefined ) }
+                    />
                 ) }
             </div>
         </>

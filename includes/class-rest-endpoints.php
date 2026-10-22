@@ -80,7 +80,13 @@ class Rest_Endpoints {
 
         // do we have filesystem credentials?
         if ( ! $plugin->initialize_filesystem( $url, true ) ) {
-            return new WP_REST_Response( null, 500 );
+            return new WP_REST_Response(
+                [
+                    'type' => 'error',
+                    __( 'Object cache could not be disabled.', 'redis-cache' ),
+                ],
+                500
+            );
         }
 
         $result = $wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
@@ -124,7 +130,13 @@ class Rest_Endpoints {
 
         // do we have filesystem credentials?
         if ( ! $plugin->initialize_filesystem( $url, true ) ) {
-            return new WP_REST_Response( null, 500 );
+            return new WP_REST_Response(
+                [
+                    'type' => 'error',
+                    __( 'Object cache could not be enabled.', 'redis-cache' ),
+                ],
+                500
+            );
         }
 
         $result = $wp_filesystem->copy(

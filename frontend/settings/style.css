@@ -767,6 +767,23 @@
     margin: 0;
 }
 
+#redis-cache .notifications-container {
+    position: absolute;
+    inset-block-start: 10px;
+    inset-inline-end: 20px;
+    inline-size: max-content;
+    top: 10px;
+    right: 20px;
+    width: max-content;
+    max-width: calc(100% - 40px);
+    max-inline-size: calc(100% - 40px);
+}
+
+.notifications-container .notification {
+    container-type: normal;
+    overflow-wrap: anywhere;
+}
+
 #redis-cache .compatibility .dashicons {
     margin-right: 5px;
 }
